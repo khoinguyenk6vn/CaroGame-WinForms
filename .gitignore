@@ -480,3 +480,7 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# CaroGame: file cau hinh rieng cua tung may (chua secrets), tao tu file *.example.json
+appsettings.Local.json
+clientsettings.json
