@@ -1,0 +1,8 @@
+{
+  "ServerUrl": "http://localhost:5023",
+  "Llm": {
+    "BaseUrl": "https://generativelanguage.googleapis.com/v1beta/openai/",
+    "Model": "gemini-flash-lite-latest",
+    "ApiKey": "your-api-key"
+  }
+}
