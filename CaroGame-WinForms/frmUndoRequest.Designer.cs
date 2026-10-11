@@ -28,12 +28,62 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Text = "frmUndoRequest";
+            lblMessage = new Label();
+            btnAccept = new Button();
+            btnDecline = new Button();
+            SuspendLayout();
+            // 
+            // lblMessage
+            // 
+            lblMessage.AutoSize = true;
+            lblMessage.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblMessage.ForeColor = Color.Red;
+            lblMessage.Location = new Point(16, 52);
+            lblMessage.Name = "lblMessage";
+            lblMessage.Size = new Size(521, 21);
+            lblMessage.TabIndex = 0;
+            lblMessage.Text = "Đối thủ muốn xin đi lại (Undo) nước vừa rồi. Bạn có đồng ý không?";
+            // 
+            // btnAccept
+            // 
+            btnAccept.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnAccept.Location = new Point(93, 147);
+            btnAccept.Name = "btnAccept";
+            btnAccept.Size = new Size(90, 43);
+            btnAccept.TabIndex = 1;
+            btnAccept.Text = "Đồng Ý";
+            btnAccept.UseVisualStyleBackColor = true;
+            // 
+            // btnDecline
+            // 
+            btnDecline.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnDecline.ForeColor = Color.Red;
+            btnDecline.Location = new Point(333, 147);
+            btnDecline.Name = "btnDecline";
+            btnDecline.Size = new Size(90, 43);
+            btnDecline.TabIndex = 2;
+            btnDecline.Text = "Từ Chối";
+            btnDecline.UseVisualStyleBackColor = true;
+            // 
+            // frmUndoRequest
+            // 
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.White;
+            ClientSize = new Size(549, 251);
+            Controls.Add(btnDecline);
+            Controls.Add(btnAccept);
+            Controls.Add(lblMessage);
+            Name = "frmUndoRequest";
+            Text = "frmUndoRequest";
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
+
+        private Label lblMessage;
+        private Button btnAccept;
+        private Button btnDecline;
     }
 }

@@ -14,5 +14,19 @@ namespace CaroGame_WinForms
         {
             InitializeComponent();
         }
+
+        // Nút Đồng ý: Trả về kết quả DialogResult.Yes
+        private void btnAccept_Click(object sender, EventArgs e)
+        {
+            this.DialogResult = DialogResult.Yes;
+            this.Close();
+        }
+
+        // Nút Từ chối: Trả về kết quả DialogResult.No
+        private void btnDecline_Click(object sender, EventArgs e)
+        {
+            this.DialogResult = DialogResult.No;
+            this.Close();
+        }
     }
 }

@@ -121,6 +121,98 @@ namespace CaroGame_WinForms
             lblPlayer2Timer.Text = player2Time;
         }
 
+        // ===================== Các hàm xử lý Undo / FF / Kết thúc trận đấu =====================
+        
+        // 6. Xử lý khi người chơi bấm nút Undo
+        // Biến theo dõi số lần bị từ chối xin Undo trong trận này (tối đa 3 lần)
+        private int myUndoRejectionCount = 0;
+
+        private void btnUndo_Click(object sender, EventArgs e)
+        {
+            // Kiểm tra luật: Bị từ chối đủ 3 lần trong trận thì không được xin nữa
+            if (myUndoRejectionCount >= 3)
+            {
+                MessageBox.Show("Bạn đã bị từ chối xin đi lại đủ 3 lần trong trận này, không thể xin nữa!",
+                                "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            // Tạm dừng đồng hồ của cả 2 bên trong lúc chờ đối thủ phản hồi
+            PauseTimers();
+            // TODO: Gọi lệnh gửi yêu cầu Undo lên Server qua SignalR
+            // Ví dụ: await hubConnection.InvokeAsync("SendUndoRequest");
+        }
+        // 2. Hàm được gọi khi SERVER báo có đối thủ đang xin Undo ở máy mình
+        public void ReceiveUndoRequestFromServer()
+        {
+            // Đảm bảo an toàn luồng giao diện (Thread-safe) vì SignalR chạy luồng ngầm
+            if (InvokeRequired)
+            {
+                Invoke(new Action(ReceiveUndoRequestFromServer));
+                return;
+            }
+            // Tạm dừng đồng hồ trong lúc chờ hộp thoại popup hiện lên
+            PauseTimers();
+            // Mở form frmUndoRequest dạng Dialog để bắt buộc người chơi phải chọn
+            frmUndoRequest frm = new frmUndoRequest();
+            DialogResult result = frm.ShowDialog();
+            if (result == DialogResult.Yes)
+            {
+                // Đồng ý: Gửi phản hồi đồng ý lên Server
+                // await hubConnection.InvokeAsync("RespondUndoRequest", true);
+            }
+            else
+            {
+                // Từ chối: Gửi phản hồi từ chối lên Server
+                // await hubConnection.InvokeAsync("RespondUndoRequest", false);
+            }
+
+            // Tiếp tục chạy lại đồng hồ sau khi đã có quyết định
+            ResumeTimers();
+        }
+
+        // 3. Hàm được gọi khi SERVER báo đối thủ ĐÃ ĐỒNG Ý Undo
+        public void HandleUndoAccepted()
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action(HandleUndoAccepted));
+                return;
+            }
+
+            // Thực hiện lùi lại nước đi trên mảng dữ liệu bàn cờ (Ví dụ xóa 2 nước gần nhất của 2 người)
+            // Sau đó vẽ lại bàn cờ
+            pnlBoard.Invalidate();
+            ResumeTimers();
+        }
+
+        // 4. Hàm được gọi khi SERVER báo đối thủ ĐÃ TỪ CHỐI Undo
+        public void HandleUndoDeclined()
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action(HandleUndoDeclined));
+                return;
+            }
+
+            myUndoRejectionCount++; // Tăng số lần bị từ chối lên 1
+            ResumeTimers();         // Hết tạm dừng đồng hồ
+
+            MessageBox.Show($"Đối thủ đã từ chối yêu cầu đi lại của bạn (Lần {myUndoRejectionCount}/3).",
+                            "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        // Hàm phụ trợ giả lập tạm dừng / tiếp tục đồng hồ
+        private void PauseTimers()
+        {
+            // Dừng timer đếm ngược của trận đấu
+        }
+
+        private void ResumeTimers()
+        {
+            // Tiếp tục timer đếm ngược
+        }
+
+
 
     }
 }
