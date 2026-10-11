@@ -122,6 +122,7 @@
             btnUndo.TabIndex = 0;
             btnUndo.Text = "Undo";
             btnUndo.UseVisualStyleBackColor = true;
+            btnUndo.Click += btnUndo_Click;
             // 
             // pnlPlayer1
             // 
@@ -261,7 +262,6 @@
             Controls.Add(btnGameSettings);
             Controls.Add(pnlBoard);
             Name = "frmGame";
-            Text = "frmGame";
             Load += frmGame_Load;
             ((System.ComponentModel.ISupportInitialize)picPlayer1Avatar).EndInit();
             pnlGameSettings.ResumeLayout(false);
