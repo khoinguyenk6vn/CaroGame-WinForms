@@ -42,7 +42,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(590, 139);
+            label1.Location = new Point(590, 146);
             label1.Name = "label1";
             label1.Size = new Size(50, 15);
             label1.TabIndex = 0;
@@ -50,7 +50,7 @@
             // 
             // txtUsername
             // 
-            txtUsername.Location = new Point(452, 177);
+            txtUsername.Location = new Point(452, 212);
             txtUsername.Name = "txtUsername";
             txtUsername.Size = new Size(321, 23);
             txtUsername.TabIndex = 1;
@@ -58,7 +58,7 @@
             // 
             // txtEmail
             // 
-            txtEmail.Location = new Point(452, 241);
+            txtEmail.Location = new Point(452, 271);
             txtEmail.Name = "txtEmail";
             txtEmail.Size = new Size(321, 23);
             txtEmail.TabIndex = 2;
@@ -66,23 +66,25 @@
             // 
             // txtPassword
             // 
-            txtPassword.Location = new Point(452, 305);
+            txtPassword.Location = new Point(452, 332);
             txtPassword.Name = "txtPassword";
             txtPassword.Size = new Size(321, 23);
             txtPassword.TabIndex = 3;
             txtPassword.Text = "Password";
+            txtPassword.UseSystemPasswordChar = true;
             // 
             // txtConfirmPassword
             // 
-            txtConfirmPassword.Location = new Point(452, 369);
+            txtConfirmPassword.Location = new Point(452, 397);
             txtConfirmPassword.Name = "txtConfirmPassword";
             txtConfirmPassword.Size = new Size(321, 23);
             txtConfirmPassword.TabIndex = 4;
             txtConfirmPassword.Text = "ConfirmPassword";
+            txtConfirmPassword.UseSystemPasswordChar = true;
             // 
             // btnContinue
             // 
-            btnContinue.Location = new Point(577, 486);
+            btnContinue.Location = new Point(579, 552);
             btnContinue.Name = "btnContinue";
             btnContinue.Size = new Size(75, 23);
             btnContinue.TabIndex = 5;
@@ -92,7 +94,7 @@
             // lnkLogin
             // 
             lnkLogin.AutoSize = true;
-            lnkLogin.Location = new Point(618, 408);
+            lnkLogin.Location = new Point(618, 435);
             lnkLogin.Name = "lnkLogin";
             lnkLogin.Size = new Size(155, 15);
             lnkLogin.TabIndex = 6;
@@ -111,7 +113,7 @@
             // lblError
             // 
             lblError.AutoSize = true;
-            lblError.Location = new Point(563, 604);
+            lblError.Location = new Point(972, 303);
             lblError.Name = "lblError";
             lblError.Size = new Size(98, 15);
             lblError.TabIndex = 8;

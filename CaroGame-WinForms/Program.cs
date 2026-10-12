@@ -1,4 +1,6 @@
+
 using CaroGame_WinForms.Forms;
+using CaroGame_WinForms.Forms.Account;
 
 namespace CaroGame_WinForms
 {
@@ -13,7 +15,7 @@ namespace CaroGame_WinForms
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
-            Application.Run(new frmMain());
+            Application.Run(new frmRegister());
         }
     }
 }

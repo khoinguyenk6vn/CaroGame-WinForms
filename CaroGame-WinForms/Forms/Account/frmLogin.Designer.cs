@@ -32,15 +32,16 @@
             txtUsername = new TextBox();
             txtPassword = new TextBox();
             btnContinue = new Button();
-            lnkLogin = new LinkLabel();
+            lnkRegister = new LinkLabel();
             btnBack = new Button();
             lblError = new Label();
+            lnkForgotPassword = new LinkLabel();
             SuspendLayout();
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(573, 115);
+            label1.Location = new Point(583, 148);
             label1.Name = "label1";
             label1.Size = new Size(65, 15);
             label1.TabIndex = 0;
@@ -48,7 +49,7 @@
             // 
             // txtUsername
             // 
-            txtUsername.Location = new Point(454, 191);
+            txtUsername.Location = new Point(452, 223);
             txtUsername.Name = "txtUsername";
             txtUsername.Size = new Size(321, 23);
             txtUsername.TabIndex = 1;
@@ -56,7 +57,7 @@
             // 
             // txtPassword
             // 
-            txtPassword.Location = new Point(454, 256);
+            txtPassword.Location = new Point(452, 289);
             txtPassword.Name = "txtPassword";
             txtPassword.Size = new Size(321, 23);
             txtPassword.TabIndex = 2;
@@ -65,22 +66,22 @@
             // 
             // btnContinue
             // 
-            btnContinue.Location = new Point(573, 370);
+            btnContinue.Location = new Point(583, 497);
             btnContinue.Name = "btnContinue";
             btnContinue.Size = new Size(75, 23);
             btnContinue.TabIndex = 6;
             btnContinue.Text = "Tiếp tục";
             btnContinue.UseVisualStyleBackColor = true;
             // 
-            // lnkLogin
+            // lnkRegister
             // 
-            lnkLogin.AutoSize = true;
-            lnkLogin.Location = new Point(620, 302);
-            lnkLogin.Name = "lnkLogin";
-            lnkLogin.Size = new Size(155, 15);
-            lnkLogin.TabIndex = 7;
-            lnkLogin.TabStop = true;
-            lnkLogin.Text = "Đã có tài khoản? Đăng nhập";
+            lnkRegister.AutoSize = true;
+            lnkRegister.Location = new Point(452, 326);
+            lnkRegister.Name = "lnkRegister";
+            lnkRegister.Size = new Size(79, 15);
+            lnkRegister.TabIndex = 7;
+            lnkRegister.TabStop = true;
+            lnkRegister.Text = "Đăng ký ngay";
             // 
             // btnBack
             // 
@@ -94,20 +95,31 @@
             // lblError
             // 
             lblError.AutoSize = true;
-            lblError.Location = new Point(560, 461);
+            lblError.Location = new Point(971, 289);
             lblError.Name = "lblError";
             lblError.Size = new Size(98, 15);
             lblError.TabIndex = 9;
             lblError.Text = "Cảnh báo lỗi (ẩn)";
+            // 
+            // lnkForgotPassword
+            // 
+            lnkForgotPassword.AutoSize = true;
+            lnkForgotPassword.Location = new Point(684, 326);
+            lnkForgotPassword.Name = "lnkForgotPassword";
+            lnkForgotPassword.Size = new Size(89, 15);
+            lnkForgotPassword.TabIndex = 10;
+            lnkForgotPassword.TabStop = true;
+            lnkForgotPassword.Text = "Quên mật khẩu";
             // 
             // frmLogin
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1278, 761);
+            Controls.Add(lnkForgotPassword);
             Controls.Add(lblError);
             Controls.Add(btnBack);
-            Controls.Add(lnkLogin);
+            Controls.Add(lnkRegister);
             Controls.Add(btnContinue);
             Controls.Add(txtPassword);
             Controls.Add(txtUsername);
@@ -124,8 +136,9 @@
         private TextBox txtUsername;
         private TextBox txtPassword;
         private Button btnContinue;
-        private LinkLabel lnkLogin;
+        private LinkLabel lnkRegister;
         private Button btnBack;
         private Label lblError;
+        private LinkLabel lnkForgotPassword;
     }
 }
