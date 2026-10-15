@@ -1,4 +1,4 @@
-namespace CaroGame_WinForms
+namespace CaroGame_WinForms.Forms
 {
     internal static class Program
     {
@@ -13,8 +13,9 @@ namespace CaroGame_WinForms
             ApplicationConfiguration.Initialize();
             //Application.Run(new Form1());
             Application.Run(new frmGame());
-            Application.Run(new frmResult(false, "PvP Online", 1000));
-            Application.Run(new frmUndoRequest());
+            //Application.Run(new frmResult(false, "PvP Online", 1000));
+            //Application.Run(new frmUndoRequest());
+            Application.Run(new frmMatchmaking());
         }
     }
 }
