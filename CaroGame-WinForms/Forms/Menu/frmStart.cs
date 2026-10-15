@@ -6,11 +6,11 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 
-namespace CaroGame_WinForms
+namespace CaroGame_WinForms.Forms.Menu
 {
-    public partial class frmMatchmaking : Form
+    public partial class frmStart : Form
     {
-        public frmMatchmaking()
+        public frmStart()
         {
             InitializeComponent();
         }
