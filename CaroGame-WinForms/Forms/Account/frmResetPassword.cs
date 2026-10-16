@@ -1,18 +1,63 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
+﻿using CaroGame.Shared.Dtos;
+using CaroGame_WinForms.Services;
+using Microsoft.AspNetCore.SignalR.Client;
 
 namespace CaroGame_WinForms.Forms.Account
 {
+    // Đặt mật khẩu mới sau khi đã nhập đúng mã. Trả về DialogResult.OK nếu đổi thành công.
     public partial class frmResetPassword : Form
     {
-        public frmResetPassword()
+        private readonly string email;
+        private readonly string code;
+
+        public frmResetPassword(string email, string code)
         {
             InitializeComponent();
+            this.email = email;
+            this.code = code;
+            lblError.Text = "";
+
+            // Gắn các sự kiện chưa được gắn trong Designer
+            btnConfirm.Click += btnConfirm_Click;
+            btnBack.Click += btnBack_Click;
+        }
+
+        private async void btnConfirm_Click(object? sender, EventArgs e)
+        {
+            lblError.Text = "";
+
+            if (txtNewPassword.Text != txtConfirmPassword.Text)
+            {
+                lblError.Text = "Mật khẩu nhập lại không khớp.";
+                return;
+            }
+
+            // Gửi kèm mã để server kiểm tra lại lần nữa trước khi đổi mật khẩu
+            AccountResult result;
+            try
+            {
+                HubConnection hub = await ServerConnection.ConnectAsync();
+                result = await hub.InvokeAsync<AccountResult>("ResetPassword", email, code, txtNewPassword.Text);
+            }
+            catch (Exception)
+            {
+                lblError.Text = "Không kết nối được server.";
+                return;
+            }
+
+            if (!result.Success)
+            {
+                lblError.Text = result.Message;
+                return;
+            }
+
+            MessageBox.Show("Đổi mật khẩu thành công. Hãy đăng nhập bằng mật khẩu mới.", "Quên mật khẩu");
+            DialogResult = DialogResult.OK;
+        }
+
+        private void btnBack_Click(object? sender, EventArgs e)
+        {
+            Close();
         }
     }
 }

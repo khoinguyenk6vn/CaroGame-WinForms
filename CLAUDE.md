@@ -12,7 +12,23 @@ Trao đổi với người dùng bằng tiếng Việt. Các quyết định tro
 
 ## Trạng thái hiện tại
 
-Đã xong bước 0 của lộ trình: solution có đủ 3 project nhưng đều còn là template trống (`Form1` trống, Server chỉ có endpoint "Hello World", Shared chưa có class nào). Chưa có logic game, chưa cài gói NuGet nào (SignalR Client, EF Core, BCrypt sẽ thêm khi tới bước cần dùng).
+Đã xong bước 0–3 và bước 4 (trừ việc thử Cloudflare tunnel). Nhóm đã kéo xong giao diện các Form, nằm trong `CaroGame-WinForms/Forms/` chia 3 thư mục `Account`, `Match`, `Menu`. App khởi động bằng `frmStart`.
+
+- Luật chơi dùng chung ở `CaroGame.Shared/Game/`: `Board` (bàn cờ + danh sách nước để Undo), `GameRules` (nước hợp lệ, thắng, chặn 2 đầu), `GameClock` (đồng hồ 180 giây kiểu cờ vua, đếm bằng số giây nguyên, mỗi giây gọi `TickOneSecond()` một lần), các enum `Stone`, `GameMode`, `EndReason`.
+- Client: `Game/LocalMatch.cs` xử lý một trận PvE/Offline (lượt, thắng/hòa, hết giờ, Undo, FF); `Game/CaroBot.cs` là bot chấm điểm ô trống; `Services/ClientSettings.cs` đọc `clientsettings.json`; `Services/BotChatService.cs` gọi LLM kiểu OpenAI, lỗi gì cũng trả câu soạn sẵn.
+- `frmGame` (PvE, Offline) và `frmResult` đã có logic. `frmGame` dùng `Player1Timer` của Designer (1 giây/lần, chạy suốt trận) để trừ giờ người đang tới lượt; `Player2Timer` không dùng. Lý do kết thúc tạm hiện trên thanh tiêu đề `frmResult` cho tới khi có `lblReason`.
+- Luồng màn hình: `frmStart` (Chơi ngay → Guest; Đăng nhập; `toolStripButton1` là icon Settings, `toolStripButton2` là icon Information) → `frmModeSelect` (menu chính; đóng menu chính là thoát app). Guest bấm PvP Online hoặc BXH thì mở `frmLogin`. Logic Online (bước 6), BXH và Profile (bước 5) chưa làm.
+- Client: `Services/Session.cs` (static, giữ tên người chơi, đã đăng nhập chưa, token, điểm), `Services/ServerConnection.cs` (static, 1 `HubConnection` cho cả app, kết nối khi cần), `Services/SoundSettings.cs` (2 biến bật/tắt, phát âm thanh làm ở bước 8). Các Form tài khoản gọi Hub bằng `InvokeAsync<T>("TênHàm", ...)` trong try/catch, lỗi kết nối thì hiện "Không kết nối được server." ở `lblError`.
+- Form tài khoản mở nhau bằng `ShowDialog(this)` chồng lên nhau (không Hide form đang là dialog). `frmVerifyCode(email, purpose)` dùng chung cho đăng ký và quên mật khẩu, trả mã đã nhập đúng qua `VerifiedCode`. `frmForgotPassword.btnContinue` không dùng (chỉ dùng `btnSendCode`).
+- Server: `Data/` (`AppDbContext`, entity `User`, `VerificationCode`), `Migrations/` (`InitialCreate`), `Services/AccountService.cs` (đăng ký, đăng nhập, mã xác minh, đổi mật khẩu), `Services/EmailService.cs` (Gmail SMTP; chưa điền Gmail trong `appsettings.Local.json` thì in mã ra cửa sổ server), `Services/SessionStore.cs` (static, danh sách người đang online trong RAM, có lock), `Hubs/GameHub.cs` (map ở `/gamehub`).
+- Email và Username đều unique (cần cho quên mật khẩu theo email). Username so trùng không phân biệt hoa thường nhờ collation mặc định của SQL Server.
+- Quên mật khẩu: `CheckResetCode` chỉ kiểm tra mã (không xóa), `ResetPassword` kiểm tra mã lần nữa rồi mới đổi mật khẩu và xóa mã.
+- Chưa dùng tự kết nối lại của SignalR: ngoài trận, mất kết nối là server xóa phiên ngay (đúng luật đã chốt). Phần kết nối lại 30 giây trong trận làm ở bước 6.
+- Server cài thêm trực tiếp `System.Security.Cryptography.Pkcs` 10.0.13 để thay bản có lỗ hổng mà EF Core kéo theo. Client và Shared không được cài EF Core.
+- Các TextBox ở Form tài khoản đang có chữ gợi ý nằm trong `Text` ("Username", "Password"...), người chơi phải tự xóa. Nhóm nên chuyển sang thuộc tính `PlaceholderText` trong Designer.
+- Namespace chưa thống nhất: các Form trong `Forms/Match` dùng `CaroGame_WinForms`, các Form khác dùng `CaroGame_WinForms.Forms.Account` / `CaroGame_WinForms.Forms.Menu`. Không tự đổi vì phải sửa `.Designer.cs`.
+- `Resources/Nham_Coffe.jpg` (khai báo trong `Properties/Resources.resx`) là ảnh avatar tạm nhóm gán trong Designer cho `frmGame`, `frmModeSelect`, `frmProfile`. Nhóm quyết định giữ nguyên, không xóa.
+- Form còn thiếu control: `frmRuleVote` đang trống; `frmUndoRequest` thiếu đồng hồ đếm ngược 15 giây; `frmResult` thiếu label lý do kết thúc. Các nút của `frmResult` và `frmUndoRequest` chưa được gắn sự kiện Click trong Designer.
 
 ## Lệnh
 
@@ -22,6 +38,10 @@ Chạy từ thư mục gốc (cần .NET 10 SDK, chỉ Windows).
 dotnet build CaroGame-WinForms.slnx
 dotnet run --project CaroGame-WinForms/CaroGame-WinForms.csproj   # client
 dotnet run --project CaroGame.Server/CaroGame.Server.csproj       # server, http://localhost:5023
+
+# Migration (cần cài 1 lần: dotnet tool install --global dotnet-ef --version 10.0.13)
+dotnet ef migrations add <TenMigration> --project CaroGame.Server
+dotnet ef database update --project CaroGame.Server
 ```
 
 Chưa có project test và linter.
@@ -29,7 +49,7 @@ Chưa có project test và linter.
 File cấu hình riêng của từng máy (nằm trong `.gitignore`, mỗi thành viên tự sao chép từ file mẫu rồi điền):
 
 - `CaroGame.Server/appsettings.Local.json` từ `appsettings.Local.example.json`: connection string, Gmail và App Password. `Program.cs` của Server nạp file này bằng `AddJsonFile(..., optional: true)`.
-- `CaroGame-WinForms/clientsettings.json` từ `clientsettings.example.json`: địa chỉ server, base URL, model và API key của LLM. File được copy ra thư mục output khi build; code đọc file này chưa viết.
+- `CaroGame-WinForms/clientsettings.json` từ `clientsettings.example.json`: địa chỉ server, base URL, model và API key của LLM. File được copy ra thư mục output khi build, đọc bằng `ClientSettings.Load()`. API key thật chỉ được để trong file này, KHÔNG để trong file `.example.json` (file mẫu được commit).
 
 ## Kiến trúc
 
@@ -79,7 +99,7 @@ Triển khai và cấu hình:
 - X luôn đi trước. PvE: người chơi cầm X. Offline: người chơi 1 cầm X, người chơi 2 tên "Người chơi 2" với avatar mặc định. Online: server chọn ngẫu nhiên.
 - Từ 5 quân liên tiếp trở lên (ngang, dọc, chéo) là thắng.
 - **Chặn 2 đầu:** hàng bị quân đối thủ nằm sát ngay cả 2 đầu thì không tính thắng. Mép bàn cờ KHÔNG tính là chặn. PvE và Offline luôn áp dụng. Online hỏi cả 2 người trước trận (hạn 15 giây, không trả lời là không đồng ý, đồng hồ chưa chạy); chỉ cần 1 người không đồng ý thì chơi luật thường.
-- **Đồng hồ:** mỗi người tổng 180 giây cho cả trận, chỉ chạy trong lượt mình, ở cả 3 chế độ. Bot không bị tính giờ. Đồng hồ của X chạy ngay khi trận bắt đầu. Hết giờ là thua.
+- **Đồng hồ:** mỗi người tổng 180 giây cho cả trận, chỉ chạy trong lượt mình, áp dụng ở PvP Offline và PvP Online. PvE không tính giờ (nhóm đổi ngày 2026-10-16): đồng hồ vẫn hiện nhưng đứng yên. Đồng hồ của X chạy ngay khi trận bắt đầu. Hết giờ là thua.
 - **Hòa:** bàn cờ đầy. Không có xin hòa.
 - **Undo:**
   - PvE: lùi 2 nước (bot + mình), không hỏi.
@@ -89,7 +109,7 @@ Triển khai và cấu hình:
 - **Bot:** một mức độ khó, thuật toán chấm điểm từng ô trống chạy trên client. KHÔNG dùng LLM để chọn nước đi.
 - **Chat:**
   - Online: realtime qua server, tối đa 200 ký tự, không lưu DB, không lọc từ ngữ.
-  - PvE (kể cả Guest): client gọi trực tiếp LLM qua API tương thích OpenAI. Mặc định Google Gemini Flash-Lite free tier, dự phòng Groq; base URL, model và API key nằm trong file cấu hình để đổi nhà cung cấp không sửa code. Chỉ gửi nội dung chat và tình hình trận, KHÔNG gửi email hay thông tin cá nhân. Câu trả lời giới hạn 1–2 câu. Lỗi 429, timeout hoặc mất mạng thì dùng câu soạn sẵn.
+  - PvE (kể cả Guest): client gọi trực tiếp LLM qua API tương thích OpenAI. Mặc định Google Gemini `gemini-3.1-flash-lite` free tier, dự phòng Groq (các model Gemini miễn phí hiện đều có thinking không tắt được, trả lời 1–6 giây, đôi khi quá 10 giây nên rơi vào câu soạn sẵn; Groq nhanh hơn); base URL, model và API key nằm trong file cấu hình để đổi nhà cung cấp không sửa code. Chỉ gửi nội dung chat và tình hình trận, KHÔNG gửi email hay thông tin cá nhân. Câu trả lời giới hạn 1–2 câu. Lỗi 429, timeout hoặc mất mạng thì dùng câu soạn sẵn.
   - Offline: chỉ hiển thị tin nhắn, không có phản hồi.
 
 ## Điểm rank (chỉ PvP Online)
@@ -117,7 +137,10 @@ Nhóm gọi là "Elo" nhưng là hệ điểm cố định theo số nước, kh
 - Nhóm tự thiết kế toàn bộ Form bằng WinForms Designer. Claude chỉ viết logic.
 - Trước khi viết logic cho một Form, đọc file `.cs` và `.Designer.cs` của Form đó để lấy đúng tên control. KHÔNG đoán tên control.
 - KHÔNG sửa `.Designer.cs`. KHÔNG tự tạo control bằng code. Ngoại lệ duy nhất: bàn cờ 20x20, nhóm đặt 1 Panel, Claude vẽ bàn cờ và xử lý click bằng code.
-- Thiếu Form hoặc control thì DỪNG và báo nhóm, liệt kê: Form nào, loại control, tên đề xuất (tiền tố `btn`, `txt`, `lbl`, `pnl`, `pic`, `lst`...), dùng để làm gì. Chờ nhóm kéo xong mới viết tiếp.
+- Thiếu Form hoặc control tương tác (nút, ô nhập, checkbox...) thì DỪNG và báo nhóm, liệt kê: Form nào, loại control, tên đề xuất (tiền tố `btn`, `txt`, `lbl`, `pnl`, `pic`, `lst`...), dùng để làm gì. Chờ nhóm kéo xong mới viết tiếp.
+- Thiếu label chỉ để hiển thị (đếm ngược, lý do kết thúc...) thì KHÔNG chặn: viết logic trước (ví dụ hết 15 giây vẫn tự tính là từ chối), báo nhóm label còn thiếu, nối phần hiển thị khi nhóm kéo xong.
+- Trong mỗi bước của lộ trình, làm phần tương tác (click, tick, text-change) trước, phần hiển thị thông báo sau.
+- Sự kiện chưa được gắn trong Designer thì gắn trong constructor của file `.cs` (`btnX.Click += btnX_Click;`), không sửa `.Designer.cs`.
 - Mỗi Form chỉ 1 người sửa, để tránh xung đột `.Designer.cs` và `.resx` trên git.
 - Phần nhóm có thể chưa biết làm (cài SQL Server, chạy Migration, tạo Gmail App Password, Cloudflare Tunnel) thì hướng dẫn từng bước.
 - Làm từng phần nhỏ: mỗi lần một Form hoặc một chức năng.
@@ -129,15 +152,15 @@ Việc kéo Form chia cho 3 người (TV1, TV2, TV3; chưa gắn tên thật). T
 
 - **TV1 (trận đấu):** `frmGame`, `frmResult`, `frmUndoRequest`, `frmRuleVote`, `frmMatchmaking`.
 - **TV2 (tài khoản):** `frmRegister`, `frmLogin`, `frmVerifyCode`, `frmForgotPassword`, `frmResetPassword`.
-- **TV3 (menu và hồ sơ):** `frmStart` (là `Form1` hiện có), `frmInformation`, `frmSettings`, `frmModeSelect`, `frmProfile`, `frmHistory`, `frmLeaderboard`.
+- **TV3 (menu và hồ sơ):** `frmStart`, `frmInformation`, `frmSettings`, `frmModeSelect`, `frmProfile`, `frmHistory`, `frmLeaderboard`.
 
 ## Lộ trình
 
 0. (Xong) Thêm 2 project vào solution, file cấu hình mẫu, `.gitignore` cho secrets.
-1. Luật chơi trong Shared, bàn cờ, PvP Offline: thắng, chặn 2 đầu, đồng hồ, Undo, FF. Cần `frmGame`, `frmResult`.
-2. PvE: bot, Undo 2 nước, chat câu soạn sẵn rồi tới LLM.
-3. Khung màn hình: mở app, Guest, chọn chế độ, hướng dẫn, Settings.
-4. Server nền: EF Core, Migration, Hub, đăng ký, đăng nhập, mã email, quên mật khẩu. Thử luôn Cloudflare tunnel.
+1. (Xong) Luật chơi trong Shared, bàn cờ, PvP Offline: thắng, chặn 2 đầu, đồng hồ, Undo, FF. Cần `frmGame`, `frmResult`.
+2. (Xong) PvE: bot, Undo 2 nước, chat câu soạn sẵn rồi tới LLM.
+3. (Xong) Khung màn hình: mở app, Guest, chọn chế độ, hướng dẫn, Settings.
+4. (Xong, trừ thử Cloudflare tunnel) Server nền: EF Core, Migration, Hub, đăng ký, đăng nhập, mã email, quên mật khẩu. Thử luôn Cloudflare tunnel.
 5. Profile, avatar, lịch sử, bảng xếp hạng.
 6. Online, lần lượt: ghép trận, hỏi luật, nước đi và đồng hồ trên server, chat, Undo, FF và tính điểm, kết nối lại 30 giây.
 7. Triển khai trên máy host, thử 2 máy khác mạng, tập phương án localhost.
@@ -145,6 +168,8 @@ Việc kéo Form chia cho 3 người (TV1, TV2, TV3; chưa gắn tên thật). T
 
 ## Phong cách code
 
+- Code chỉ làm đúng chức năng được yêu cầu, KHÔNG làm thêm (không thêm hiệu ứng, hộp thoại xác nhận, phím tắt, xử lý cho chế độ chưa làm tới...). Lý do: thầy có thể hỏi lại hoặc bắt nhóm tự viết lại đoạn code đó, nên code phải đủ cơ bản để sinh viên tự viết lại được.
+- Dùng cú pháp và thư viện cơ bản: class thường thay vì `record`, không dùng Reflection, không dùng mẹo nâng cao khi có cách đơn giản hơn.
 - Ưu tiên dễ đọc hơn ngắn gọn hay "thông minh". Mỗi hàm ngắn, làm đúng 1 việc.
 - Tên biến và hàm bằng tiếng Anh rõ nghĩa. Comment tiếng Việt ở chỗ logic quan trọng.
 - KHÔNG dùng Generic Repository, Unit of Work tự viết, CQRS/MediatR, AutoMapper hay nhiều tầng abstraction. Các class Service dùng thẳng `AppDbContext`.
