@@ -13,6 +13,13 @@ namespace CaroGame_WinForms.Forms.Menu
         public frmInformation()
         {
             InitializeComponent();
+
+            btnClose.Click += btnClose_Click;
+        }
+
+        private void btnClose_Click(object? sender, EventArgs e)
+        {
+            Close();
         }
     }
 }

@@ -1,218 +1,303 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
+﻿using CaroGame.Shared.Game;
+using CaroGame_WinForms.Game;
+using CaroGame_WinForms.Services;
 
 namespace CaroGame_WinForms
 {
+    // Màn trận đấu cho PvE và PvP Offline.
+    // Form chỉ nhận thao tác của người chơi, gọi LocalMatch xử lý, rồi vẽ lại theo trạng thái trận.
     public partial class frmGame : Form
     {
-        private const int BoardSize = 20; // Bàn cờ 20x20
-        private int cellSize;             // Kích thước mỗi ô tính động theo kích thước Panel
-        private int[,] boardData = new int[BoardSize, BoardSize]; // 0: trống, 1: Player 1, 2: Player 2
-        private bool myTurn = true;       // Kiểm tra có phải lượt của mình không
+        private readonly LocalMatch match;
+        private readonly string player1Name;
+        private readonly string player2Name;
+        private readonly BotChatService botChat;
+        private int cellSize;
 
-        public frmGame()
+        // Người chơi 1 luôn cầm X, người chơi 2 (hoặc bot) luôn cầm O
+        public frmGame(GameMode mode, string player1Name)
         {
             InitializeComponent();
 
-            // Đăng ký sự kiện vẽ và click cho bàn cờ (Ngoại lệ được phép vẽ bằng code)
-            pnlBoard.Paint += pnlBoard_Paint;
+            match = new LocalMatch(mode);
+            this.player1Name = player1Name;
+            player2Name = mode == GameMode.PvE ? "Bot" : "Người chơi 2";
+            botChat = new BotChatService(ClientSettings.Load().Llm);
+
+            // Gắn các sự kiện chưa được gắn trong Designer
             pnlBoard.MouseClick += pnlBoard_MouseClick;
-
-            // Bật DoubleBuffered để vẽ bàn cờ mượt không bị nháy (flicker)
-            typeof(Panel).InvokeMember("DoubleBuffered",
-                System.Reflection.BindingFlags.SetProperty | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic,
-                null, pnlBoard, new object[] { true });
-        }
-        private void frmGame_Load(object sender, EventArgs e)
-        {
-            // Tính toán kích thước mỗi ô dựa trên chiều rộng hiện tại của Panel
-            cellSize = pnlBoard.Width / BoardSize;
-            pnlGameSettings.Visible = false; // Ẩn menu cài đặt lúc đầu
-            lblConnectionStatus.Text = "Trạng thái: Đã kết nối";
+            btnSurrender.Click += btnSurrender_Click;
+            Player1Timer.Tick += Player1Timer_Tick;
+            FormClosing += frmGame_FormClosing;
         }
 
-        // 1. Xử lý sự kiện bấm nút mở menu cài đặt (Undo / FF)
-        private void btnGameSettings_Click(object sender, EventArgs e)
+        private void frmGame_Load(object? sender, EventArgs e)
         {
-            pnlGameSettings.Visible = !pnlGameSettings.Visible;
+            // Bàn cờ 20x20 ô vuông, kích thước ô tính theo kích thước Panel
+            cellSize = Math.Min(pnlBoard.Width, pnlBoard.Height) / Board.Size;
+
+            lblPlayer1Name.Text = player1Name + " (X)";
+            lblPlayer2Name.Text = player2Name + " (O)";
+            lblRule.Text = "Chặn 2 đầu: Bật";
+            lblConnectionStatus.Text = "Offline";
+
+            UpdateView();
         }
 
-        // 2. Vẽ lưới bàn cờ và các quân cờ đã đánh
-        private void pnlBoard_Paint(object sender, PaintEventArgs e)
-        {
-            Graphics g = e.Graphics;
-            Pen pen = Pens.Gray;
-            Brush brushX = Brushes.Blue;
-            Brush brushO = Brushes.Red;
-            Font font = new Font("Arial", cellSize * 0.6f, FontStyle.Bold);
-            StringFormat sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
+        // ===================== Bàn cờ =====================
 
-            // Vẽ các đường kẻ bàn cờ 20x20
-            for (int i = 0; i <= BoardSize; i++)
+        private async void pnlBoard_MouseClick(object? sender, MouseEventArgs e)
+        {
+            // Đổi tọa độ chuột (pixel) sang hàng, cột của bàn cờ
+            int row = e.Y / cellSize;
+            int col = e.X / cellSize;
+
+            // Ô ngoài bàn, ô đã có quân, trận đã kết thúc, hoặc đang tới lượt bot thì bỏ qua
+            if (!match.PlayMove(row, col))
             {
-                g.DrawLine(pen, i * cellSize, 0, i * cellSize, BoardSize * cellSize);
-                g.DrawLine(pen, 0, i * cellSize, BoardSize * cellSize, i * cellSize);
+                return;
             }
 
-            // Vẽ các quân cờ đã đánh lên bàn cờ
-            for (int r = 0; r < BoardSize; r++)
+            UpdateView();
+            if (match.IsOver)
             {
-                for (int c = 0; c < BoardSize; c++)
+                ShowResult();
+                return;
+            }
+
+            // PvE: chờ 1 giây rồi bot mới đánh. Trong lúc chờ, giao diện vẫn hoạt động bình thường.
+            if (match.IsBotTurn)
+            {
+                await Task.Delay(1000);
+
+                // Trong lúc chờ, người chơi có thể đã đóng màn trận hoặc đầu hàng
+                if (IsDisposed || !match.PlayBotMove())
                 {
-                    Rectangle rect = new Rectangle(c * cellSize, r * cellSize, cellSize, cellSize);
-                    if (boardData[r, c] == 1)
-                    {
-                        g.DrawString("X", font, brushX, rect, sf);
-                    }
-                    else if (boardData[r, c] == 2)
-                    {
-                        g.DrawString("O", font, brushO, rect, sf);
-                    }
+                    return;
+                }
+
+                UpdateView();
+                if (match.IsOver)
+                {
+                    ShowResult();
                 }
             }
         }
 
-        // 3. Xử lý khi người chơi click chuột lên bàn cờ để đánh quân
-        private void pnlBoard_MouseClick(object sender, MouseEventArgs e)
+        private void pnlBoard_Paint(object? sender, PaintEventArgs e)
         {
-            if (!myTurn) return; // Không phải lượt của mình thì bỏ qua
+            DrawGrid(e.Graphics);
+            DrawStones(e.Graphics);
+        }
 
-            int c = e.X / cellSize;
-            int r = e.Y / cellSize;
-
-            // Kiểm tra ô hợp lệ và chưa có ai đánh
-            if (r >= 0 && r < BoardSize && c >= 0 && c < BoardSize && boardData[r, c] == 0)
+        private void DrawGrid(Graphics g)
+        {
+            int boardPixels = Board.Size * cellSize;
+            for (int i = 0; i <= Board.Size; i++)
             {
-                boardData[r, c] = 1; // Giả lập đánh quân X
-                myTurn = false;      // Chuyển lượt
-                lblTurn.Text = "Lượt của đối thủ";
-
-                pnlBoard.Invalidate(); // Yêu cầu vẽ lại bàn cờ ngay lập tức
-
-                // TODO: Gửi nước đi (r, c) này lên Server qua SignalR nếu là chế độ Online
+                g.DrawLine(Pens.Gray, i * cellSize, 0, i * cellSize, boardPixels);
+                g.DrawLine(Pens.Gray, 0, i * cellSize, boardPixels, i * cellSize);
             }
         }
 
-        // 4. Xử lý sự kiện gửi tin nhắn chat
-        private void btnSendChat_Click(object sender, EventArgs e)
+        private void DrawStones(Graphics g)
         {
-            if (!string.IsNullOrWhiteSpace(txtChatInput.Text))
+            Font font = new Font("Arial", cellSize / 2, FontStyle.Bold);
+
+            for (int row = 0; row < Board.Size; row++)
             {
-                listBoxChat.Items.Add("Tôi: " + txtChatInput.Text);
-                txtChatInput.Clear();
-                txtChatInput.Focus();
+                for (int col = 0; col < Board.Size; col++)
+                {
+                    Stone stone = match.Board.GetStone(row, col);
+                    int x = col * cellSize + cellSize / 5;
+                    int y = row * cellSize + cellSize / 8;
+
+                    if (stone == Stone.X)
+                    {
+                        g.DrawString("X", font, Brushes.Blue, x, y);
+                    }
+                    else if (stone == Stone.O)
+                    {
+                        g.DrawString("O", font, Brushes.Red, x, y);
+                    }
+                }
+            }
+
+            font.Dispose();
+        }
+
+        // ===================== Đồng hồ =====================
+
+        // Player1Timer chạy suốt trận, mỗi giây gọi 1 lần (Interval = 1000 trong Designer).
+        // Chỉ cập nhật chữ, KHÔNG vẽ lại bàn cờ, để bàn cờ không bị chớp mỗi giây.
+        private void Player1Timer_Tick(object? sender, EventArgs e)
+        {
+            bool timeUp = match.TickClock();
+            UpdateLabels();
+
+            if (timeUp)
+            {
+                ShowResult();
             }
         }
 
-        // 5. Ví dụ hàm cập nhật giao diện an toàn từ luồng khác (SignalR Thread Safe)
-        public void UpdateTimerFromServer(string player1Time, string player2Time)
+        private string FormatTime(int seconds)
         {
-            if (InvokeRequired)
-            {
-                Invoke(new Action(() => UpdateTimerFromServer(player1Time, player2Time)));
-                return;
-            }
-            lblPlayer1Timer.Text = player1Time;
-            lblPlayer2Timer.Text = player2Time;
+            return (seconds / 60).ToString("00") + ":" + (seconds % 60).ToString("00");
         }
 
-        // ===================== Các hàm xử lý Undo / FF / Kết thúc trận đấu =====================
-        
-        // 6. Xử lý khi người chơi bấm nút Undo
-        // Biến theo dõi số lần bị từ chối xin Undo trong trận này (tối đa 3 lần)
-        private int myUndoRejectionCount = 0;
+        // ===================== Undo / FF =====================
 
-        private void btnUndo_Click(object sender, EventArgs e)
+        private void btnGameSettings_Click(object? sender, EventArgs e)
         {
-            // Kiểm tra luật: Bị từ chối đủ 3 lần trong trận thì không được xin nữa
-            if (myUndoRejectionCount >= 3)
-            {
-                MessageBox.Show("Bạn đã bị từ chối xin đi lại đủ 3 lần trong trận này, không thể xin nữa!",
-                                "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-            // Tạm dừng đồng hồ của cả 2 bên trong lúc chờ đối thủ phản hồi
-            PauseTimers();
-            // TODO: Gọi lệnh gửi yêu cầu Undo lên Server qua SignalR
-            // Ví dụ: await hubConnection.InvokeAsync("SendUndoRequest");
+            pnlGameSettings.Visible = !pnlGameSettings.Visible;
         }
-        // 2. Hàm được gọi khi SERVER báo có đối thủ đang xin Undo ở máy mình
-        public void ReceiveUndoRequestFromServer()
+
+        private void btnUndo_Click(object? sender, EventArgs e)
         {
-            // Đảm bảo an toàn luồng giao diện (Thread-safe) vì SignalR chạy luồng ngầm
-            if (InvokeRequired)
+            pnlGameSettings.Visible = false;
+
+            if (match.Undo())
             {
-                Invoke(new Action(ReceiveUndoRequestFromServer));
-                return;
+                UpdateView();
             }
-            // Tạm dừng đồng hồ trong lúc chờ hộp thoại popup hiện lên
-            PauseTimers();
-            // Mở form frmUndoRequest dạng Dialog để bắt buộc người chơi phải chọn
-            frmUndoRequest frm = new frmUndoRequest();
-            DialogResult result = frm.ShowDialog();
-            if (result == DialogResult.Yes)
+        }
+
+        private void btnSurrender_Click(object? sender, EventArgs e)
+        {
+            pnlGameSettings.Visible = false;
+
+            match.Surrender();
+            UpdateView();
+            ShowResult();
+        }
+
+        // Không có nút thoát riêng: đóng trận khi chưa kết thúc chính là đầu hàng
+        private void frmGame_FormClosing(object? sender, FormClosingEventArgs e)
+        {
+            match.Surrender();
+        }
+
+        // ===================== Kết thúc trận =====================
+
+        private void ShowResult()
+        {
+            frmResult resultForm = new frmResult(GetResultText(), GetModeText(), GetReasonText());
+            DialogResult choice = resultForm.ShowDialog(this);
+
+            if (choice == DialogResult.Retry)
             {
-                // Đồng ý: Gửi phản hồi đồng ý lên Server
-                // await hubConnection.InvokeAsync("RespondUndoRequest", true);
+                match.Start();
+                UpdateView();
             }
             else
             {
-                // Từ chối: Gửi phản hồi từ chối lên Server
-                // await hubConnection.InvokeAsync("RespondUndoRequest", false);
+                Close();
             }
-
-            // Tiếp tục chạy lại đồng hồ sau khi đã có quyết định
-            ResumeTimers();
         }
 
-        // 3. Hàm được gọi khi SERVER báo đối thủ ĐÃ ĐỒNG Ý Undo
-        public void HandleUndoAccepted()
+        private string GetResultText()
         {
-            if (InvokeRequired)
+            if (match.Winner == Stone.None)
             {
-                Invoke(new Action(HandleUndoAccepted));
+                return "Hòa";
+            }
+
+            if (match.Mode == GameMode.PvE)
+            {
+                return match.Winner == LocalMatch.Player1Stone ? "Bạn thắng!" : "Bạn thua!";
+            }
+
+            return GetPlayerName(match.Winner) + " thắng!";
+        }
+
+        private string GetModeText()
+        {
+            return match.Mode == GameMode.PvE ? "PvE" : "PvP Offline";
+        }
+
+        private string GetReasonText()
+        {
+            switch (match.EndReason)
+            {
+                case EndReason.FiveInRow:
+                    return "Đủ 5 quân";
+                case EndReason.Timeout:
+                    return "Hết giờ";
+                case EndReason.Forfeit:
+                    return "Đầu hàng";
+                default:
+                    return "Bàn cờ đầy";
+            }
+        }
+
+        // ===================== Chat =====================
+
+        private async void btnSendChat_Click(object? sender, EventArgs e)
+        {
+            string message = txtChatInput.Text.Trim();
+            if (message == "")
+            {
                 return;
             }
 
-            // Thực hiện lùi lại nước đi trên mảng dữ liệu bàn cờ (Ví dụ xóa 2 nước gần nhất của 2 người)
-            // Sau đó vẽ lại bàn cờ
+            txtChatInput.Clear();
+
+            // PvP Offline: tin nhắn chỉ hiển thị, không có phản hồi
+            if (match.Mode == GameMode.PvPOffline)
+            {
+                listBoxChat.Items.Add(message);
+                return;
+            }
+
+            listBoxChat.Items.Add(player1Name + ": " + message);
+
+            // await chạy tiếp trên luồng giao diện nên cập nhật listBoxChat trực tiếp được
+            string reply = await botChat.GetReplyAsync(message, DescribeMatchSituation());
+
+            // Trong lúc chờ bot trả lời, người chơi có thể đã đóng màn trận
+            if (IsDisposed)
+            {
+                return;
+            }
+
+            listBoxChat.Items.Add("Bot: " + reply);
+        }
+
+        // Tình hình trận gửi kèm cho LLM, không chứa thông tin cá nhân của người chơi
+        private string DescribeMatchSituation()
+        {
+            return "Bàn cờ 20x20, đã đánh " + match.Board.MoveCount + " nước. Người chơi cầm X, bot cầm O.";
+        }
+
+        // ===================== Cập nhật giao diện =====================
+
+        // Vẽ lại bàn cờ và cập nhật chữ. Chỉ gọi khi bàn cờ thay đổi (đánh, Undo, chơi lại).
+        private void UpdateView()
+        {
             pnlBoard.Invalidate();
-            ResumeTimers();
+            UpdateLabels();
         }
 
-        // 4. Hàm được gọi khi SERVER báo đối thủ ĐÃ TỪ CHỐI Undo
-        public void HandleUndoDeclined()
+        // Cập nhật đồng hồ và lượt đi
+        private void UpdateLabels()
         {
-            if (InvokeRequired)
+            lblPlayer1Timer.Text = FormatTime(match.Clock.SecondsLeftX);
+            lblPlayer2Timer.Text = FormatTime(match.Clock.SecondsLeftO);
+
+            if (match.IsOver)
             {
-                Invoke(new Action(HandleUndoDeclined));
-                return;
+                lblTurn.Text = "Hết trận";
             }
-
-            myUndoRejectionCount++; // Tăng số lần bị từ chối lên 1
-            ResumeTimers();         // Hết tạm dừng đồng hồ
-
-            MessageBox.Show($"Đối thủ đã từ chối yêu cầu đi lại của bạn (Lần {myUndoRejectionCount}/3).",
-                            "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            else
+            {
+                lblTurn.Text = "Lượt: " + GetPlayerName(match.CurrentTurn);
+            }
         }
 
-        // Hàm phụ trợ giả lập tạm dừng / tiếp tục đồng hồ
-        private void PauseTimers()
+        private string GetPlayerName(Stone stone)
         {
-            // Dừng timer đếm ngược của trận đấu
+            return stone == LocalMatch.Player1Stone ? player1Name : player2Name;
         }
-
-        private void ResumeTimers()
-        {
-            // Tiếp tục timer đếm ngược
-        }
-
-
-
     }
 }

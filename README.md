@@ -27,7 +27,7 @@ Game có 3 chế độ:
 
 Ngoài ra có tài khoản (đăng ký, xác minh email, quên mật khẩu), hệ thống điểm và bậc rank, bảng xếp hạng chung, lịch sử đấu, avatar, và chat trong trận.
 
-**Trạng thái hiện tại:** đã xong bước 0 của roadmap. Solution có đủ 3 project nhưng đều còn là template trống, chưa có logic game.
+**Trạng thái hiện tại:** đã xong bước 0 của roadmap và phần giao diện các Form (trong `CaroGame-WinForms/Forms/`, chia 3 thư mục `Account`, `Match`, `Menu`). Chưa có code logic game.
 
 ## Kiến trúc
 
@@ -83,7 +83,21 @@ Hai file dưới đây chứa thông tin bí mật nên đã nằm trong `.gitig
 | `CaroGame.Server/appsettings.Local.json` | `CaroGame.Server/appsettings.Local.example.json` | Connection string, địa chỉ Gmail và App Password dùng để gửi mã |
 | `CaroGame-WinForms/clientsettings.json` | `CaroGame-WinForms/clientsettings.example.json` | Địa chỉ server, base URL, tên model và API key của LLM |
 
-**Không commit hai file này lên git.**
+**Không commit hai file này lên git.** API key, mật khẩu thật chỉ được điền vào 2 file trên, không điền vào file `.example.json` (file mẫu được commit).
+
+Nếu để trống `Address` và `AppPassword` trong `appsettings.Local.json` thì server không gửi mail mà in mã xác minh ra cửa sổ server, tiện cho việc code thử trên máy mình.
+
+### Tạo CSDL (làm 1 lần trên mỗi máy)
+
+```powershell
+# Cài công cụ Migration của EF Core
+dotnet tool install --global dotnet-ef --version 10.0.13
+
+# Tạo database CaroGame trên LocalDB từ các Migration có sẵn
+dotnet ef database update --project CaroGame.Server
+```
+
+Khi có Migration mới (sau khi pull code), chạy lại lệnh `dotnet ef database update` để cập nhật CSDL.
 
 ### Lệnh
 
@@ -209,7 +223,7 @@ Chưa có file âm thanh và nhạc nền. Chức năng được thiết kế s�
 ### Đồng hồ
 
 - Mỗi người có tổng 180 giây cho cả trận (kiểu đồng hồ cờ vua), chỉ chạy trong lượt của mình.
-- Áp dụng ở cả 3 chế độ. Ở PvE, bot không bị tính giờ.
+- Áp dụng ở PvP Offline và PvP Online. PvE không tính giờ: đồng hồ vẫn hiện trên màn hình nhưng đứng yên ở 03:00.
 - Đồng hồ của người đi trước (X) chạy ngay khi trận bắt đầu.
 - Hết giờ là thua.
 
@@ -326,7 +340,7 @@ Mỗi người phụ trách kéo giao diện các Form trong mảng của mình 
 | TV2 | Tài khoản | `frmRegister`, `frmLogin`, `frmVerifyCode`, `frmForgotPassword`, `frmResetPassword` | Đăng ký, đăng nhập, mã email, quên mật khẩu, session, EF Core và Migration |
 | TV3 | Menu và hồ sơ | `frmStart`, `frmInformation`, `frmSettings`, `frmModeSelect`, `frmProfile`, `frmHistory`, `frmLeaderboard` | Luồng Guest, Profile, avatar, lịch sử, bảng xếp hạng, điểm rank, âm thanh |
 
-`frmStart` chính là `Form1` hiện có trong project. TV1, TV2, TV3 là tên tạm, nhóm thay bằng tên thật.
+TV1, TV2, TV3 là tên tạm, nhóm thay bằng tên thật.
 
 ### Danh sách Form và control
 
@@ -388,44 +402,44 @@ Nguyên tắc sắp xếp: có thứ chơi được sớm nhất, và thử đư
 
 **Kết quả:** cả nhóm clone về và build được.
 
-### Bước 1: Luật chơi và PvP Offline
+### Bước 1: Luật chơi và PvP Offline (đã xong)
 
-- [ ] Luật chơi trong `CaroGame.Shared`: nước đi hợp lệ, kiểm tra thắng, luật chặn 2 đầu, kiểm tra hòa.
-- [ ] Vẽ bàn cờ 20x20 trên `pnlBoard` và xử lý click.
-- [ ] Đồng hồ 180 giây mỗi người.
-- [ ] Undo lùi 1 nước.
-- [ ] FF và hộp thoại kết quả.
+- [x] Luật chơi trong `CaroGame.Shared`: nước đi hợp lệ, kiểm tra thắng, luật chặn 2 đầu, kiểm tra hòa.
+- [x] Vẽ bàn cờ 20x20 trên `pnlBoard` và xử lý click.
+- [x] Đồng hồ 180 giây mỗi người.
+- [x] Undo lùi 1 nước.
+- [x] FF và hộp thoại kết quả.
 
 **Form cần có trước:** `frmGame`, `frmResult` (TV1).
 **Kết quả:** chơi được 2 người chung máy từ đầu tới cuối trận.
 
-### Bước 2: PvE
+### Bước 2: PvE (đã xong)
 
-- [ ] Bot chấm điểm từng ô trống.
-- [ ] Undo lùi 2 nước.
-- [ ] Chat với bot bằng câu soạn sẵn.
-- [ ] Đọc `clientsettings.json` và gọi LLM, có xử lý lỗi 429, timeout, mất mạng.
+- [x] Bot chấm điểm từng ô trống.
+- [x] Undo lùi 2 nước.
+- [x] Chat với bot bằng câu soạn sẵn.
+- [x] Đọc `clientsettings.json` và gọi LLM, có xử lý lỗi 429, timeout, mất mạng.
 
 **Form cần có trước:** không thêm.
 **Việc hạ tầng:** API key Gemini.
 **Kết quả:** chơi được với bot, chat được với AI.
 
-### Bước 3: Khung màn hình
+### Bước 3: Khung màn hình (đã xong)
 
-- [ ] Màn mở app, luồng Chơi ngay với tên Guest tự sinh.
-- [ ] Màn chọn chế độ, chuyển vào trận PvE và Offline.
-- [ ] Form hướng dẫn và form Settings (âm thanh để chỗ trống).
+- [x] Màn mở app, luồng Chơi ngay với tên Guest tự sinh.
+- [x] Màn chọn chế độ, chuyển vào trận PvE và Offline.
+- [x] Form hướng dẫn và form Settings (âm thanh để chỗ trống).
 
 **Form cần có trước:** `frmStart`, `frmModeSelect`, `frmInformation`, `frmSettings` (TV3).
 **Kết quả:** đi được hết luồng của Guest.
 
 ### Bước 4: Server nền và tài khoản
 
-- [ ] Cài gói EF Core, tạo `AppDbContext`, entity, Migration đầu tiên trên LocalDB.
-- [ ] SignalR Hub và kết nối từ client.
-- [ ] Đăng ký, gửi mã email, xác minh.
-- [ ] Đăng nhập, session token, chặn đăng nhập 2 máy.
-- [ ] Quên mật khẩu.
+- [x] Cài gói EF Core, tạo `AppDbContext`, entity, Migration đầu tiên trên LocalDB.
+- [x] SignalR Hub và kết nối từ client.
+- [x] Đăng ký, gửi mã email, xác minh.
+- [x] Đăng nhập, session token, chặn đăng nhập 2 máy.
+- [x] Quên mật khẩu.
 - [ ] Thử Cloudflare tunnel với server thật.
 
 **Form cần có trước:** `frmRegister`, `frmLogin`, `frmVerifyCode`, `frmForgotPassword`, `frmResetPassword` (TV2).
