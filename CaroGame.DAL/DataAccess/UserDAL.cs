@@ -63,6 +63,14 @@ namespace CaroGame.DAL.DataAccess
             await db.SaveChangesAsync();
         }
 
+        // Xóa 1 user (các mã xác minh của user này bị xóa theo nhờ khóa ngoại Cascade)
+        public async Task DeleteAsync(User user)
+        {
+            using AppDbContext db = dbFactory.CreateDbContext();
+            db.Users.Remove(user);
+            await db.SaveChangesAsync();
+        }
+
         // Xếp hạng mọi tài khoản đã xác minh: điểm cao trước,
         // bằng điểm thì nhiều trận thắng Online trước, rồi tới username theo chữ cái.
         // Số trận thắng không lưu cột riêng mà đếm từ bảng lịch sử.

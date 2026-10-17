@@ -75,7 +75,14 @@ namespace CaroGame.BLL.Services
             };
             await userDal.AddAsync(user);
 
-            return await SendCodeAsync(user, CodePurpose.Register);
+            // Không gửi được mã xác minh thì xóa tài khoản vừa tạo,
+            // để người chơi đăng ký lại được với cùng username và email
+            AccountResult sendResult = await SendCodeAsync(user, CodePurpose.Register);
+            if (!sendResult.Success)
+            {
+                await userDal.DeleteAsync(user);
+            }
+            return sendResult;
         }
 
         // Mật khẩu 6-50 ký tự và phải nhập lại giống nhau
@@ -111,7 +118,14 @@ namespace CaroGame.BLL.Services
             // Nếu vừa gửi chưa đủ 60 giây thì không gửi lại, người chơi dùng mã đã nhận.
             if (!user.IsEmailVerified)
             {
-                await SendCodeAsync(user, CodePurpose.Register);
+                AccountResult sendResult = await SendCodeAsync(user, CodePurpose.Register);
+
+                // Gửi mã không được và cũng không còn mã cũ dùng được thì báo lỗi, không mở form nhập mã
+                if (!sendResult.Success && !await HasValidCodeAsync(user, CodePurpose.Register))
+                {
+                    return new LoginResult { Message = sendResult.Message };
+                }
+
                 return new LoginResult
                 {
                     NeedEmailVerification = true,
@@ -192,8 +206,6 @@ namespace CaroGame.BLL.Services
                 {
                     return Fail("Vui lòng chờ " + (ResendWaitSeconds - secondsSinceSent) + " giây rồi gửi lại mã.");
                 }
-
-                await codeDal.DeleteAsync(oldCode);
             }
 
             // Sinh số ngẫu nhiên an toàn từ 000000 đến 999999
@@ -203,9 +215,18 @@ namespace CaroGame.BLL.Services
             {
                 await emailService.SendCodeAsync(user.Email, code);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return Fail("Không gửi được email, hãy thử lại sau.");
+                // Ghi lý do thật ra cửa sổ server để người quản lý server sửa (thường là sai Gmail hoặc App Password)
+                Console.WriteLine("[Loi gui mail] " + ex.Message + (ex.InnerException != null ? " - " + ex.InnerException.Message : "")
+                    + " => kiem tra Email:Address va Email:AppPassword trong appsettings.Local.json");
+                return Fail("Không gửi được email xác minh: máy chủ chưa cấu hình đúng Gmail, hãy báo người quản lý server rồi thử lại.");
+            }
+
+            // Gửi thành công mới xóa mã cũ, để nếu gửi lỗi thì mã cũ (nếu còn hạn) vẫn dùng được
+            if (oldCode != null)
+            {
+                await codeDal.DeleteAsync(oldCode);
             }
 
             await codeDal.AddAsync(new VerificationCode
@@ -219,6 +240,13 @@ namespace CaroGame.BLL.Services
             });
 
             return Ok("Mã xác minh đã được gửi tới " + user.Email);
+        }
+
+        // Còn mã chưa hết hạn: người chơi vẫn dùng được mã đã nhận trước đó
+        private async Task<bool> HasValidCodeAsync(User user, CodePurpose purpose)
+        {
+            VerificationCode? savedCode = await codeDal.GetAsync(user.Id, purpose.ToString());
+            return savedCode != null && DateTime.Now <= savedCode.ExpiresAt;
         }
 
         // Xác minh email sau khi đăng ký
