@@ -1,3 +1,4 @@
+using CaroGame.BLL.Services;
 using Microsoft.AspNetCore.SignalR.Client;
 
 namespace CaroGame_WinForms.Services
@@ -7,16 +8,23 @@ namespace CaroGame_WinForms.Services
     {
         private static HubConnection? connection;
 
-        // Trả về kết nối tới server, chưa kết nối thì kết nối.
         // Địa chỉ server lấy từ clientsettings.json, ví dụ http://localhost:5023
+        public static string ServerUrl
+        {
+            get { return ClientSettings.Load().ServerUrl.TrimEnd('/'); }
+        }
+
+        // Trả về kết nối tới server, chưa kết nối thì kết nối.
         public static async Task<HubConnection> ConnectAsync()
         {
             if (connection == null)
             {
-                string serverUrl = ClientSettings.Load().ServerUrl;
+                // WithAutomaticReconnect: mất mạng thì SignalR tự thử kết nối lại (sau 0, 2, 10, 30 giây)
                 connection = new HubConnectionBuilder()
-                    .WithUrl(serverUrl.TrimEnd('/') + "/gamehub")
+                    .WithUrl(ServerUrl + "/gamehub")
+                    .WithAutomaticReconnect()
                     .Build();
+                connection.Reconnected += Connection_Reconnected;
             }
 
             if (connection.State == HubConnectionState.Disconnected)
@@ -25,6 +33,22 @@ namespace CaroGame_WinForms.Services
             }
 
             return connection;
+        }
+
+        // Kết nối lại xong thì mã kết nối đã đổi: gửi token để server gắn lại phiên đăng nhập.
+        // Server trả false nghĩa là phiên đã bị giải phóng, coi như đã đăng xuất.
+        private static async Task Connection_Reconnected(string? newConnectionId)
+        {
+            if (!Session.IsLoggedIn || connection == null)
+            {
+                return;
+            }
+
+            bool sessionKept = await connection.InvokeAsync<bool>("Reconnect", Session.Token);
+            if (!sessionKept)
+            {
+                Session.StartAsGuest();
+            }
         }
     }
 }

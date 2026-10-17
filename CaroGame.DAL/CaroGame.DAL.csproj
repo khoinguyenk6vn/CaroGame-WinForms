@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <!--
+    Mọi gói NuGet của solution chỉ cài ở DAL.
+    BLL tham chiếu DAL, GUI và Server tham chiếu BLL, nên các project đó dùng được các gói này qua tham chiếu bắc cầu.
+  -->
+  <ItemGroup>
+    <!-- EF Core: truy cập SQL Server -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.13" />
+    <!-- Cần cho lệnh dotnet ef (tạo Migration) -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.13" />
+    <!-- Cần cho lệnh Add-Migration trong Package Manager Console của Visual Studio -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.13">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <!-- Thêm trực tiếp để thay bản 10.0.12 có lỗ hổng bảo mật mà EF Core tự kéo theo -->
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.13" />
+    <!-- Hash mật khẩu (BLL dùng) -->
+    <PackageReference Include="BCrypt.Net-Next" Version="4.2.0" />
+    <!-- Kết nối SignalR tới server (GUI dùng) -->
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="10.0.13" />
+  </ItemGroup>
+
+</Project>

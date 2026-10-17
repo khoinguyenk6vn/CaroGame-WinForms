@@ -28,30 +28,28 @@
         /// </summary>
         private void InitializeComponent()
         {
-            chkSound = new CheckBox();
-            chkMusic = new CheckBox();
+            btnSound = new Button();
+            btnMusic = new Button();
             btnClose = new Button();
             SuspendLayout();
-            // 
-            // chkSound
-            // 
-            chkSound.AutoSize = true;
-            chkSound.Location = new Point(77, 37);
-            chkSound.Name = "chkSound";
-            chkSound.Size = new Size(60, 19);
-            chkSound.TabIndex = 0;
-            chkSound.Text = "Sound";
-            chkSound.UseVisualStyleBackColor = true;
-            // 
-            // chkMusic
-            // 
-            chkMusic.AutoSize = true;
-            chkMusic.Location = new Point(77, 81);
-            chkMusic.Name = "chkMusic";
-            chkMusic.Size = new Size(58, 19);
-            chkMusic.TabIndex = 1;
-            chkMusic.Text = "Music";
-            chkMusic.UseVisualStyleBackColor = true;
+            //
+            // btnSound
+            //
+            btnSound.Location = new Point(77, 37);
+            btnSound.Name = "btnSound";
+            btnSound.Size = new Size(150, 23);
+            btnSound.TabIndex = 0;
+            btnSound.Text = "Âm thanh: Bật";
+            btnSound.UseVisualStyleBackColor = true;
+            //
+            // btnMusic
+            //
+            btnMusic.Location = new Point(77, 81);
+            btnMusic.Name = "btnMusic";
+            btnMusic.Size = new Size(150, 23);
+            btnMusic.TabIndex = 1;
+            btnMusic.Text = "Nhạc nền: Bật";
+            btnMusic.UseVisualStyleBackColor = true;
             // 
             // btnClose
             // 
@@ -68,8 +66,8 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(468, 213);
             Controls.Add(btnClose);
-            Controls.Add(chkMusic);
-            Controls.Add(chkSound);
+            Controls.Add(btnMusic);
+            Controls.Add(btnSound);
             Name = "frmSettings";
             Text = "frmSettings";
             ResumeLayout(false);
@@ -78,8 +76,8 @@
 
         #endregion
 
-        private CheckBox chkSound;
-        private CheckBox chkMusic;
+        private Button btnSound;
+        private Button btnMusic;
         private Button btnClose;
     }
 }

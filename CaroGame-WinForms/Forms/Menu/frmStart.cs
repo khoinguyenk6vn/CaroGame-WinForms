@@ -1,4 +1,5 @@
-﻿using CaroGame_WinForms.Forms.Account;
+using CaroGame_WinForms.Forms.Account;
+using CaroGame.BLL.Services;
 using CaroGame_WinForms.Services;
 
 namespace CaroGame_WinForms.Forms.Menu
@@ -33,13 +34,22 @@ namespace CaroGame_WinForms.Forms.Menu
             }
         }
 
-        // Màn chọn chế độ là menu chính. Đóng menu chính là thoát game.
+        // Màn chọn chế độ là menu chính. Đóng menu chính là thoát game,
+        // còn đăng xuất (trong Profile) thì quay lại màn hình mở app.
         private void OpenModeSelect()
         {
             Hide();
             frmModeSelect modeSelectForm = new frmModeSelect();
             modeSelectForm.ShowDialog();
-            Close();
+
+            if (modeSelectForm.LoggedOut)
+            {
+                Show();
+            }
+            else
+            {
+                Close();
+            }
         }
 
         private void btnSettings_Click(object? sender, EventArgs e)

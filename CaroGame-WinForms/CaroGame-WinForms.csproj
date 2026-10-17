@@ -13,10 +13,10 @@
   <ItemGroup>
     <!-- File cấu hình riêng của từng máy, tự tạo từ clientsettings.example.json -->
     <None Update="clientsettings.json" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\CaroGame.Shared\CaroGame.Shared.csproj" />
+    <!-- 20 ảnh avatar mặc định (DiceBear, style Thumbs) -->
+    <None Update="Avatars\*.png" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Âm thanh: move.mp3 (đánh quân), music.mp3 (nhạc nền). Thiếu file vẫn chạy bình thường. -->
+    <None Update="Sounds\*.mp3" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>
@@ -35,7 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="10.0.13" />
+    <ProjectReference Include="..\CaroGame.BLL\CaroGame.BLL.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -44,6 +44,8 @@
     <RootNamespace>CaroGame_WinForms</RootNamespace>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
+    <!-- Bật thư viện WPF có sẵn của .NET để dùng MediaPlayer phát âm thanh (không phải gói NuGet) -->
+    <UseWPF>true</UseWPF>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 

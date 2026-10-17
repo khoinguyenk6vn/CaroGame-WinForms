@@ -1,4 +1,5 @@
-﻿using CaroGame.Shared.Dtos;
+using CaroGame.BLL.Dtos;
+using CaroGame.BLL.Services;
 using CaroGame_WinForms.Services;
 using Microsoft.AspNetCore.SignalR.Client;
 
@@ -52,7 +53,7 @@ namespace CaroGame_WinForms.Forms.Account
                 return;
             }
 
-            Session.Login(result.Username, result.Token, result.Score);
+            Session.Login(result);
             DialogResult = DialogResult.OK;
         }
 

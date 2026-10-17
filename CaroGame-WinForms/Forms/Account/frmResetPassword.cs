@@ -1,4 +1,5 @@
-﻿using CaroGame.Shared.Dtos;
+using CaroGame.BLL.Dtos;
+using CaroGame.BLL.Services;
 using CaroGame_WinForms.Services;
 using Microsoft.AspNetCore.SignalR.Client;
 
@@ -26,18 +27,13 @@ namespace CaroGame_WinForms.Forms.Account
         {
             lblError.Text = "";
 
-            if (txtNewPassword.Text != txtConfirmPassword.Text)
-            {
-                lblError.Text = "Mật khẩu nhập lại không khớp.";
-                return;
-            }
-
-            // Gửi kèm mã để server kiểm tra lại lần nữa trước khi đổi mật khẩu
+            // Gửi kèm mã để server kiểm tra lại lần nữa trước khi đổi mật khẩu.
+            // Độ dài mật khẩu và nhập lại có khớp không do tầng BLL ở server kiểm tra.
             AccountResult result;
             try
             {
                 HubConnection hub = await ServerConnection.ConnectAsync();
-                result = await hub.InvokeAsync<AccountResult>("ResetPassword", email, code, txtNewPassword.Text);
+                result = await hub.InvokeAsync<AccountResult>("ResetPassword", email, code, txtNewPassword.Text, txtConfirmPassword.Text);
             }
             catch (Exception)
             {
