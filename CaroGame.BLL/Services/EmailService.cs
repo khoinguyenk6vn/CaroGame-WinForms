@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Mail;
+using CaroGame.BLL.Settings;
 
 namespace CaroGame.BLL.Services
 {

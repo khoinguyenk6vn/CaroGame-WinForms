@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <!-- File cấu hình riêng của từng máy, tự tạo từ clientsettings.example.json -->
+    <None Update="clientsettings.json" CopyToOutputDirectory="PreserveNewest" />
+    <!-- 20 ảnh avatar mặc định (DiceBear, style Thumbs) -->
+    <None Update="Avatars\*.png" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Âm thanh: move.mp3 (đánh quân), music.mp3 (nhạc nền). Thiếu file vẫn chạy bình thường. -->
+    <None Update="Sounds\*.mp3" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CaroGame.BLL\CaroGame.BLL.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <RootNamespace>CaroGame.UI</RootNamespace>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <!-- Bật thư viện WPF có sẵn của .NET để dùng MediaPlayer phát âm thanh (không phải gói NuGet) -->
+    <UseWPF>true</UseWPF>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+</Project>

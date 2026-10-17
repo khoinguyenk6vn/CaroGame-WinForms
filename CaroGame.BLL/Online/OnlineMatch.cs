@@ -1,5 +1,6 @@
 using CaroGame.BLL.Dtos;
 using CaroGame.BLL.Game;
+using CaroGame.BLL.Models;
 
 namespace CaroGame.BLL.Online
 {

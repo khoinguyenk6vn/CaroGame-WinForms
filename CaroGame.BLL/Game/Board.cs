@@ -1,3 +1,5 @@
+using CaroGame.BLL.Models;
+
 namespace CaroGame.BLL.Game
 {
     // Bàn cờ 20x20: lưu quân trên từng ô và danh sách nước đã đánh (để Undo)

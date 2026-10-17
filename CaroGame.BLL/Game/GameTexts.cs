@@ -1,3 +1,5 @@
+using CaroGame.BLL.Models;
+
 namespace CaroGame.BLL.Game
 {
     // Đổi các giá trị trong game ra chữ tiếng Việt, dùng chung cho màn kết quả, lịch sử...

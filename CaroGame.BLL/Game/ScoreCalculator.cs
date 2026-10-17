@@ -1,3 +1,5 @@
+using CaroGame.BLL.Models;
+
 namespace CaroGame.BLL.Game
 {
     // Tính điểm rank sau trận Online. Đây là hệ điểm cố định theo số nước,

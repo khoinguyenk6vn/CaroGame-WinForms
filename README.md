@@ -36,18 +36,18 @@ Ngoài ra có tài khoản (đăng ký, xác minh email, quên mật khẩu), h�
 Solution theo mô hình 3 tầng **GUI → BLL → DAL → CSDL**, cộng thêm 1 server SignalR để các máy nói chuyện với nhau:
 
 ```
-CaroGame-WinForms (GUI) ──tham chiếu──► CaroGame.BLL ──tham chiếu──► CaroGame.DAL ──EF Core──► SQL Server
+CaroGame.UI (GUI) ──tham chiếu──► CaroGame.BLL ──tham chiếu──► CaroGame.DAL ──EF Core──► SQL Server
         │                                    ▲
         └──── SignalR ────► CaroGame.Server ─┘ (tham chiếu BLL)
 ```
 
-Solution `CaroGame-WinForms.slnx` gồm 4 project, cùng dùng .NET 10 (LTS):
+Solution `CaroGame.slnx` gồm 4 project, cùng dùng .NET 10 (LTS):
 
 | Project | Loại | Vai trò |
 |---|---|---|
 | `CaroGame.DAL` | Class Library | Tầng truy cập dữ liệu. Nơi **duy nhất** giao tiếp với CSDL, bằng EF Core. Chứa `AppDbContext`, entity, Migrations và các class `UserDAL`, `VerificationCodeDAL`... Mọi gói NuGet của solution chỉ cài ở đây. |
 | `CaroGame.BLL` | Class Library | Tầng nghiệp vụ, tham chiếu DAL. Chứa **toàn bộ** logic nghiệp vụ: luật chơi, bot, đồng hồ, tài khoản, mã xác minh, phiên đăng nhập, chat với bot, các class dữ liệu truyền qua SignalR (DTO). Không truy vấn CSDL trực tiếp, chỉ gọi DAL. |
-| `CaroGame-WinForms` | Windows Forms App | Tầng giao diện (GUI), tham chiếu BLL. Chỉ nhận thao tác và hiển thị, **không** chứa logic nghiệp vụ, **không** truy vấn CSDL. PvE và PvP Offline gọi thẳng BLL trên máy; tài khoản, BXH, Online gọi server qua SignalR. |
+| `CaroGame.UI` | Windows Forms App | Tầng giao diện (GUI), tham chiếu BLL. Chỉ nhận thao tác và hiển thị, **không** chứa logic nghiệp vụ, **không** truy vấn CSDL. PvE và PvP Offline gọi thẳng BLL trên máy; tài khoản, BXH, Online gọi server qua SignalR. |
 | `CaroGame.Server` | ASP.NET Core + SignalR | Tham chiếu BLL. Hub chỉ nhận yêu cầu từ các máy rồi chuyển cho BLL xử lý. Là nơi duy nhất giữ connection string và mật khẩu Gmail. |
 
 Các gói NuGet (EF Core, BCrypt, SignalR Client) chỉ cài ở DAL. BLL, GUI và Server dùng được các gói đó nhờ **tham chiếu bắc cầu**: project tham chiếu tới một project khác thì dùng được cả các gói NuGet của project đó.
@@ -91,7 +91,7 @@ Hai file dưới đây chứa thông tin bí mật nên đã nằm trong `.gitig
 | File cần tạo | Sao chép từ | Nội dung |
 |---|---|---|
 | `CaroGame.Server/appsettings.Local.json` | `CaroGame.Server/appsettings.Local.example.json` | Connection string, địa chỉ Gmail và App Password dùng để gửi mã |
-| `CaroGame-WinForms/clientsettings.json` | `CaroGame-WinForms/clientsettings.example.json` | Địa chỉ server, base URL, tên model và API key của LLM |
+| `CaroGame.UI/clientsettings.json` | `CaroGame.UI/clientsettings.example.json` | Địa chỉ server, base URL, tên model và API key của LLM |
 
 **Không commit hai file này lên git.** API key, mật khẩu thật chỉ được điền vào 2 file trên, không điền vào file `.example.json` (file mẫu được commit).
 
@@ -117,10 +117,10 @@ Chạy từ thư mục gốc của repo:
 
 ```powershell
 # Build cả solution
-dotnet build CaroGame-WinForms.slnx
+dotnet build CaroGame.slnx
 
 # Chạy client
-dotnet run --project CaroGame-WinForms/CaroGame-WinForms.csproj
+dotnet run --project CaroGame.UI/CaroGame.UI.csproj
 
 # Chạy server (http://localhost:5023)
 dotnet run --project CaroGame.Server/CaroGame.Server.csproj
@@ -396,7 +396,7 @@ Các việc dưới đây chưa có người nhận, nhóm điền tên vào.
 | Cài SQL Server LocalDB trên từng máy dev | 4 | Mỗi người tự làm |
 | Tạo Gmail gửi mã, bật xác minh 2 bước, tạo App Password | 4 | Chưa phân công |
 | Dựng Cloudflare named tunnel cho subdomain của `vernfy.com` | 4 | Chưa phân công |
-| Tải khoảng 20 ảnh PNG DiceBear (style CC0) | 5 | Đã xong (style Thumbs, trong `CaroGame-WinForms/Avatars`; nên xem lại giấy phép trên trang DiceBear) |
+| Tải khoảng 20 ảnh PNG DiceBear (style CC0) | 5 | Đã xong (style Thumbs, trong `CaroGame.UI/Avatars`; nên xem lại giấy phép trên trang DiceBear) |
 | Cài SQL Server Express trên máy host demo | 7 | Chưa phân công |
 | Viết nội dung hướng dẫn cho form Information | 3 | Đã xong (viết trong `frmInformation.cs`, nhóm có thể sửa lại) |
 | Tìm file âm thanh và nhạc nền | 8 | Chưa phân công |
@@ -495,7 +495,7 @@ Hướng dẫn chi tiết ở mục [Triển khai lên máy host](#triển-khai-
 
 ### Bước 8: Hoàn thiện
 
-- [x] Âm thanh và nhạc nền: code đã xong. **Còn chờ file**: đặt `move.mp3` (tiếng đánh quân) và `music.mp3` (nhạc nền) vào thư mục `CaroGame-WinForms/Sounds/`. Thiếu file thì game vẫn chạy, chỉ không có tiếng.
+- [x] Âm thanh và nhạc nền: code đã xong. **Còn chờ file**: đặt `move.mp3` (tiếng đánh quân) và `music.mp3` (nhạc nền) vào thư mục `CaroGame.UI/Sounds/`. Thiếu file thì game vẫn chạy, chỉ không có tiếng.
 - [x] Nội dung form hướng dẫn (Information).
 - [x] Rà lại toàn bộ luồng: đã kiểm thử tự động luật chơi, bot, tài khoản và 2 người chơi Online qua server thật.
 - [ ] Bấm thử toàn bộ giao diện trên máy thật (cả nhóm).
@@ -544,7 +544,7 @@ Mở một cửa sổ PowerShell khác:
 
 ### 5. Cấu hình client và thử 2 máy khác mạng
 
-1. Trên **mọi máy chơi**, sửa `CaroGame-WinForms/clientsettings.json`: `"ServerUrl": "https://caro.vernfy.com"`, rồi build lại để file được copy sang thư mục chạy.
+1. Trên **mọi máy chơi**, sửa `CaroGame.UI/clientsettings.json`: `"ServerUrl": "https://caro.vernfy.com"`, rồi build lại để file được copy sang thư mục chạy.
 2. Lấy 2 máy ở 2 mạng khác nhau (ví dụ 1 máy wifi, 1 máy phát 4G từ điện thoại). Đăng ký 2 tài khoản, cùng bấm PvP Online, đánh hết 1 trận.
 3. Thử thêm: Undo, chat, đầu hàng, tắt wifi 1 máy khoảng 10 giây rồi bật lại (trận phải chơi tiếp được).
 
