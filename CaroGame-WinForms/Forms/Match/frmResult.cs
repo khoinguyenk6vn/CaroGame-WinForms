@@ -1,10 +1,12 @@
 ﻿namespace CaroGame_WinForms
 {
     // Hộp thoại kết quả trận.
-    // Trả về DialogResult.Retry nếu chọn "Chơi lại", DialogResult.Cancel nếu chọn "Về menu".
+    // Trả về DialogResult.Retry nếu chọn "Chơi lại"/"Tìm trận mới", DialogResult.Cancel nếu chọn "Về menu".
     public partial class frmResult : Form
     {
-        public frmResult(string resultText, string modeText, string reasonText)
+        // scoreText: chữ điểm thay đổi (chỉ trận Online có), để rỗng thì ẩn
+        // playAgainText: "Chơi lại" (PvE/Offline) hoặc "Tìm trận mới" (Online)
+        public frmResult(string resultText, string modeText, string reasonText, string scoreText, string playAgainText)
         {
             InitializeComponent();
 
@@ -18,8 +20,10 @@
             // Tạm hiện lý do kết thúc trên thanh tiêu đề, khi nhóm thêm lblReason thì chuyển sang đó
             Text = "Lý do: " + reasonText;
 
-            // PvE và Offline không có điểm
-            lblEloChange.Visible = false;
+            lblEloChange.Visible = scoreText != "";
+            lblEloChange.Text = scoreText;
+
+            btnPlayAgain.Text = playAgainText;
         }
 
         // Gán DialogResult cho Form mở bằng ShowDialog thì Form tự đóng
