@@ -1,3 +1,5 @@
+using CaroGame.BLL.Models;
+
 namespace CaroGame.BLL.Game
 {
     // Luật chơi dùng chung cho Client (PvE, Offline) và Server (Online)

@@ -1,3 +1,5 @@
+using CaroGame.BLL.Models;
+
 namespace CaroGame.BLL.Game
 {
     // Đồng hồ kiểu cờ vua: mỗi người có tổng 180 giây cho cả trận,

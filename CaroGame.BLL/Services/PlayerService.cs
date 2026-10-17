@@ -1,7 +1,9 @@
 using CaroGame.BLL.Dtos;
 using CaroGame.BLL.Game;
-using CaroGame.DAL;
 using CaroGame.DAL.Entities;
+using CaroGame.DAL.DataAccess;
+using CaroGame.DAL.Models;
+using CaroGame.BLL.Models;
 
 namespace CaroGame.BLL.Services
 {
