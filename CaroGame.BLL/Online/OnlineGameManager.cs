@@ -1,8 +1,9 @@
 using CaroGame.BLL.Dtos;
 using CaroGame.BLL.Game;
 using CaroGame.BLL.Services;
-using CaroGame.DAL;
 using CaroGame.DAL.Entities;
+using CaroGame.DAL.DataAccess;
+using CaroGame.BLL.Models;
 
 namespace CaroGame.BLL.Online
 {

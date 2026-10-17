@@ -1,3 +1,5 @@
+using CaroGame.BLL.Models;
+
 
 namespace CaroGame.BLL.Game
 {

@@ -1,3 +1,5 @@
+using CaroGame.BLL.Models;
+
 namespace CaroGame.BLL.Services
 {
     // Danh sách người đang đăng nhập, chỉ lưu trong RAM (không lưu CSDL).

@@ -3,8 +3,9 @@ using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using CaroGame.BLL.Dtos;
 using CaroGame.BLL.Online;
-using CaroGame.DAL;
 using CaroGame.DAL.Entities;
+using CaroGame.DAL.DataAccess;
+using CaroGame.BLL.Models;
 
 namespace CaroGame.BLL.Services
 {
