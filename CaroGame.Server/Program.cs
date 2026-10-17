@@ -5,6 +5,8 @@ using CaroGame.DAL;
 using CaroGame.Server;
 using CaroGame.Server.Hubs;
 using Microsoft.EntityFrameworkCore;
+using CaroGame.DAL.DataAccess;
+using CaroGame.BLL.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 
