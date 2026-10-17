@@ -25,6 +25,7 @@ namespace CaroGame_WinForms
         private readonly OnlineMatchState? onlineMatch;
 
         private readonly BotChatService? botChat;
+        private string lastShownChatError = "";
         private HubConnection? hub;
         private frmUndoRequest? undoRequestForm;
         private bool surrenderedByMe;
@@ -432,6 +433,13 @@ namespace CaroGame_WinForms
             }
 
             listBoxChat.Items.Add("Bot: " + reply);
+
+            // Không gọi được AI thì báo lý do (mỗi lý do 1 lần) để người chơi biết bot đang dùng câu soạn sẵn
+            if (botChat.LastError != "" && botChat.LastError != lastShownChatError)
+            {
+                listBoxChat.Items.Add("(Bot đang dùng câu soạn sẵn vì " + botChat.LastError + ")");
+            }
+            lastShownChatError = botChat.LastError;
         }
 
         // ===================== Tin từ server (Online) =====================

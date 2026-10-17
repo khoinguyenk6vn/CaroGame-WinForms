@@ -1,3 +1,4 @@
+using System.Net;
 using System.Text;
 using System.Text.Json;
 using CaroGame.BLL.Game;
@@ -9,6 +10,8 @@ namespace CaroGame.BLL.Services
     // còn lại (chưa cấu hình, mất mạng, hết lượt 429, timeout...) thì dùng câu soạn sẵn.
     public class BotChatService
     {
+        private const int MaxAttempts = 2;
+
         private static readonly string[] PresetReplies =
         {
             "Nước đi hay đấy, nhưng tôi vẫn đang để ý bạn!",
@@ -22,12 +25,15 @@ namespace CaroGame.BLL.Services
         private readonly HttpClient httpClient = new HttpClient();
         private readonly Random random = new Random();
 
+        // Lý do lần gọi gần nhất không dùng được LLM (rỗng nếu gọi thành công), để Form báo cho người chơi
+        public string LastError { get; private set; } = "";
+
         public BotChatService(LlmSettings settings)
         {
             this.settings = settings;
 
-            // Chờ LLM quá 10 giây thì bỏ, dùng câu soạn sẵn
-            httpClient.Timeout = TimeSpan.FromSeconds(10);
+            // Chờ LLM quá 12 giây thì bỏ, dùng câu soạn sẵn
+            httpClient.Timeout = TimeSpan.FromSeconds(12);
             httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + settings.ApiKey);
         }
 
@@ -38,18 +44,39 @@ namespace CaroGame.BLL.Services
 
             if (!settings.IsConfigured)
             {
+                LastError = "chưa có API key trong file clientsettings.json";
                 return GetPresetReply();
             }
 
-            try
+            // Máy chủ AI miễn phí đôi khi quá tải (lỗi 503), thử lại thêm 1 lần thường là được
+            for (int attempt = 1; attempt <= MaxAttempts; attempt++)
             {
-                return await AskLlmAsync(playerMessage, matchSituation);
+                try
+                {
+                    string reply = await AskLlmAsync(playerMessage, matchSituation);
+                    if (reply != "")
+                    {
+                        LastError = "";
+                        return reply;
+                    }
+                    LastError = "AI không trả lời nội dung nào";
+                }
+                catch (HttpRequestException ex)
+                {
+                    LastError = DescribeHttpError(ex.StatusCode);
+                }
+                catch (TaskCanceledException)
+                {
+                    LastError = "AI trả lời quá lâu (quá 12 giây)";
+                }
+                catch (JsonException)
+                {
+                    LastError = "câu trả lời của AI không đúng định dạng";
+                }
             }
-            catch (Exception)
-            {
-                // Mọi lỗi khi gọi LLM đều dùng câu soạn sẵn, game vẫn chơi bình thường
-                return GetPresetReply();
-            }
+
+            // Mọi lỗi khi gọi LLM đều dùng câu soạn sẵn, game vẫn chơi bình thường
+            return GetPresetReply();
         }
 
         private string GetPresetReply()
@@ -57,23 +84,55 @@ namespace CaroGame.BLL.Services
             return PresetReplies[random.Next(PresetReplies.Length)];
         }
 
-        // Gọi API kiểu OpenAI (Gemini và Groq đều hỗ trợ): POST {BaseUrl}/chat/completions
+        // Đổi mã lỗi HTTP ra lý do dễ hiểu
+        private string DescribeHttpError(HttpStatusCode? statusCode)
+        {
+            if (statusCode == null)
+            {
+                return "không kết nối được máy chủ AI (kiểm tra mạng)";
+            }
+
+            int code = (int)statusCode.Value;
+            if (code == 429)
+            {
+                return "API key đã hết lượt gọi miễn phí (lỗi 429), thử lại sau ít phút";
+            }
+            if (code == 503)
+            {
+                return "máy chủ AI đang quá tải (lỗi 503)";
+            }
+            if (code == 400 || code == 401 || code == 403 || code == 404)
+            {
+                return "API key hoặc tên model trong clientsettings.json không đúng (lỗi " + code + ")";
+            }
+            return "máy chủ AI báo lỗi " + code;
+        }
+
+        // Gọi API kiểu OpenAI (Gemini và Groq đều hỗ trợ): POST {BaseUrl}/chat/completions.
+        // Trả về "" nếu AI không có nội dung trả lời.
         private async Task<string> AskLlmAsync(string playerMessage, string matchSituation)
         {
             string systemPrompt = "Bạn là bot trong game cờ caro, đang đấu với người chơi. "
                 + "Trả lời bằng tiếng Việt, tối đa 1-2 câu ngắn. "
                 + "Tình hình trận: " + matchSituation;
 
-            var requestBody = new
+            // max_tokens đặt rộng vì model có "suy nghĩ" cũng tốn token trước khi trả lời;
+            // câu trả lời vẫn ngắn nhờ yêu cầu "tối đa 1-2 câu" ở trên
+            var requestBody = new Dictionary<string, object>
             {
-                model = settings.Model,
-                max_tokens = 100,
-                messages = new[]
+                ["model"] = settings.Model,
+                ["max_tokens"] = 1024,
+                ["messages"] = new[]
                 {
                     new { role = "system", content = systemPrompt },
                     new { role = "user", content = playerMessage }
                 }
             };
+
+            if (settings.ReasoningEffort != "")
+            {
+                requestBody["reasoning_effort"] = settings.ReasoningEffort;
+            }
 
             string url = settings.BaseUrl.TrimEnd('/') + "/chat/completions";
             var content = new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8, "application/json");
@@ -84,11 +143,14 @@ namespace CaroGame.BLL.Services
             // Câu trả lời nằm ở choices[0].message.content
             string json = await response.Content.ReadAsStringAsync();
             using JsonDocument document = JsonDocument.Parse(json);
-            return document.RootElement
-                .GetProperty("choices")[0]
-                .GetProperty("message")
-                .GetProperty("content")
-                .GetString()!;
+            JsonElement message = document.RootElement.GetProperty("choices")[0].GetProperty("message");
+
+            if (!message.TryGetProperty("content", out JsonElement reply) || reply.ValueKind != JsonValueKind.String)
+            {
+                return "";
+            }
+
+            return reply.GetString()!.Trim();
         }
     }
 }

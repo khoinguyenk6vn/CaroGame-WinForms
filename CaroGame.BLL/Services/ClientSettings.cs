@@ -39,6 +39,10 @@ namespace CaroGame.BLL.Services
         public string Model { get; set; } = "";
         public string ApiKey { get; set; } = "";
 
+        // Mức "suy nghĩ" trước khi trả lời. Gemini để "minimal" thì trả lời trong khoảng 1 giây.
+        // Để trống thì không gửi (dùng khi đổi sang nhà cung cấp không hỗ trợ, ví dụ Groq).
+        public string ReasoningEffort { get; set; } = "";
+
         public bool IsConfigured =>
             !string.IsNullOrWhiteSpace(BaseUrl)
             && !string.IsNullOrWhiteSpace(Model)
