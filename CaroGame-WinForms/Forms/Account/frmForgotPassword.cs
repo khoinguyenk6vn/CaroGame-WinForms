@@ -1,4 +1,5 @@
-﻿using CaroGame.Shared.Dtos;
+using CaroGame.BLL.Dtos;
+using CaroGame.BLL.Services;
 using CaroGame_WinForms.Services;
 using Microsoft.AspNetCore.SignalR.Client;
 

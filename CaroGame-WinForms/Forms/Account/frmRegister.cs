@@ -1,4 +1,5 @@
-using CaroGame.Shared.Dtos;
+using CaroGame.BLL.Dtos;
+using CaroGame.BLL.Services;
 using CaroGame_WinForms.Services;
 using Microsoft.AspNetCore.SignalR.Client;
 
@@ -22,19 +23,13 @@ namespace CaroGame_WinForms.Forms.Account
         {
             lblError.Text = "";
 
-            if (txtPassword.Text != txtConfirmPassword.Text)
-            {
-                lblError.Text = "Mật khẩu nhập lại không khớp.";
-                return;
-            }
-
-            // Các điều kiện còn lại (độ dài username, mật khẩu, email hợp lệ, trùng tên) do server kiểm tra
+            // Mọi điều kiện (độ dài username, mật khẩu, nhập lại khớp, email hợp lệ, trùng tên) do tầng BLL ở server kiểm tra
             string email = txtEmail.Text.Trim();
             AccountResult result;
             try
             {
                 HubConnection hub = await ServerConnection.ConnectAsync();
-                result = await hub.InvokeAsync<AccountResult>("Register", txtUsername.Text.Trim(), email, txtPassword.Text);
+                result = await hub.InvokeAsync<AccountResult>("Register", txtUsername.Text.Trim(), email, txtPassword.Text, txtConfirmPassword.Text);
             }
             catch (Exception)
             {

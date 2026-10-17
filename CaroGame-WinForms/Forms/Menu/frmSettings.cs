@@ -1,43 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
+using CaroGame.BLL.Services;
 using CaroGame_WinForms.Services;
 
 namespace CaroGame_WinForms.Forms.Menu
 {
+    // Cài đặt: chỉ gồm bật/tắt âm thanh và nhạc nền
     public partial class frmSettings : Form
     {
         public frmSettings()
         {
             InitializeComponent();
 
-            // Hiện trạng thái đang lưu
-            chkSound.Checked = SoundSettings.SoundOn;
-            chkMusic.Checked = SoundSettings.MusicOn;
-
             // Gắn các sự kiện chưa được gắn trong Designer
-            chkSound.CheckedChanged += chkSound_CheckedChanged;
-            chkMusic.CheckedChanged += chkMusic_CheckedChanged;
+            btnSound.Click += btnSound_Click;
+            btnMusic.Click += btnMusic_Click;
             btnClose.Click += btnClose_Click;
+
+            ShowButtonTexts();
         }
 
-        private void chkSound_CheckedChanged(object? sender, EventArgs e)
+        private void btnSound_Click(object? sender, EventArgs e)
         {
-            SoundSettings.SoundOn = chkSound.Checked;
+            SoundSettings.ToggleSound();
+            ShowButtonTexts();
         }
 
-        private void chkMusic_CheckedChanged(object? sender, EventArgs e)
+        private void btnMusic_Click(object? sender, EventArgs e)
         {
-            SoundSettings.MusicOn = chkMusic.Checked;
+            SoundSettings.ToggleMusic();
+            SoundManager.UpdateMusic();
+            ShowButtonTexts();
         }
 
         private void btnClose_Click(object? sender, EventArgs e)
         {
             Close();
+        }
+
+        // Chữ trên nút cho biết đang bật hay tắt
+        private void ShowButtonTexts()
+        {
+            btnSound.Text = SoundSettings.SoundOn ? "Âm thanh: Bật" : "Âm thanh: Tắt";
+            btnMusic.Text = SoundSettings.MusicOn ? "Nhạc nền: Bật" : "Nhạc nền: Tắt";
         }
     }
 }

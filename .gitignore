@@ -484,3 +484,7 @@ $RECYCLE.BIN/
 # CaroGame: file cau hinh rieng cua tung may (chua secrets), tao tu file *.example.json
 appsettings.Local.json
 clientsettings.json
+
+# CaroGame: anh avatar user upload len server, khong commit
+CaroGame.Server/wwwroot/avatars/*
+!CaroGame.Server/wwwroot/avatars/.gitkeep

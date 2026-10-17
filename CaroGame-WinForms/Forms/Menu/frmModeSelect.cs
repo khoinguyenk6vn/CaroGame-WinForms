@@ -1,4 +1,6 @@
-﻿using CaroGame.Shared.Game;
+using CaroGame.BLL.Dtos;
+using CaroGame.BLL.Game;
+using CaroGame.BLL.Services;
 using CaroGame_WinForms.Forms.Account;
 using CaroGame_WinForms.Services;
 
@@ -7,6 +9,9 @@ namespace CaroGame_WinForms.Forms.Menu
     // Màn chọn chế độ (menu chính)
     public partial class frmModeSelect : Form
     {
+        // true nếu người chơi đã đăng xuất trong Profile (frmStart sẽ hiện lại màn mở app)
+        public bool LoggedOut { get; private set; }
+
         public frmModeSelect()
         {
             InitializeComponent();
@@ -16,22 +21,41 @@ namespace CaroGame_WinForms.Forms.Menu
             btnPvPOffline.Click += btnPvPOffline_Click;
             btnPvPOnline.Click += btnPvPOnline_Click;
             btnLeaderboard.Click += btnLeaderboard_Click;
-
-            lblAvatar.Text = Session.PlayerName;
+            picAvatar.Click += picAvatar_Click;
+            Load += frmModeSelect_Load;
         }
+
+        private async void frmModeSelect_Load(object? sender, EventArgs e)
+        {
+            await ShowPlayerAsync();
+        }
+
+        // Hiện tên và avatar của người đang chơi
+        private async Task ShowPlayerAsync()
+        {
+            lblAvatar.Text = Session.PlayerName;
+
+            Image? avatar = await AvatarLoader.LoadForCurrentPlayerAsync();
+            if (avatar != null && !IsDisposed)
+            {
+                picAvatar.Image = avatar;
+            }
+        }
+
+        // ===================== PvE, Offline =====================
 
         private void btnPvE_Click(object? sender, EventArgs e)
         {
-            OpenGame(GameMode.PvE);
+            OpenLocalGame(GameMode.PvE);
         }
 
         private void btnPvPOffline_Click(object? sender, EventArgs e)
         {
-            OpenGame(GameMode.PvPOffline);
+            OpenLocalGame(GameMode.PvPOffline);
         }
 
         // Ẩn màn chọn chế độ trong lúc chơi, đóng trận thì hiện lại
-        private void OpenGame(GameMode mode)
+        private void OpenLocalGame(GameMode mode)
         {
             Hide();
             frmGame gameForm = new frmGame(mode, Session.PlayerName);
@@ -39,36 +63,75 @@ namespace CaroGame_WinForms.Forms.Menu
             Show();
         }
 
-        private void btnPvPOnline_Click(object? sender, EventArgs e)
+        // ===================== PvP Online =====================
+
+        private async void btnPvPOnline_Click(object? sender, EventArgs e)
         {
             // Guest phải đăng nhập mới được chơi Online
             if (!Session.IsLoggedIn)
             {
-                OpenLogin();
+                await OpenLoginAsync();
                 return;
             }
 
-            // Ghép trận Online sẽ làm ở bước 6
+            Hide();
+
+            // Tìm trận -> chơi -> nếu chọn "Tìm trận mới" (hoặc đối thủ thoát sớm) thì tìm tiếp
+            bool findNewMatch = true;
+            while (findNewMatch)
+            {
+                frmMatchmaking matchmakingForm = new frmMatchmaking();
+                if (matchmakingForm.ShowDialog() != DialogResult.OK || matchmakingForm.MatchInfo == null)
+                {
+                    break;
+                }
+
+                frmGame gameForm = new frmGame(matchmakingForm.MatchInfo);
+                gameForm.ShowDialog();
+                findNewMatch = gameForm.FindNewMatch;
+            }
+
+            Show();
+            await ShowPlayerAsync();
         }
 
-        private void btnLeaderboard_Click(object? sender, EventArgs e)
+        // ===================== Bảng xếp hạng, Profile =====================
+
+        private async void btnLeaderboard_Click(object? sender, EventArgs e)
         {
             // Guest phải đăng nhập mới được xem bảng xếp hạng
             if (!Session.IsLoggedIn)
             {
-                OpenLogin();
+                await OpenLoginAsync();
                 return;
             }
 
-            // Bảng xếp hạng sẽ làm ở bước 5
+            frmLeaderboard leaderboardForm = new frmLeaderboard();
+            leaderboardForm.ShowDialog(this);
         }
 
-        private void OpenLogin()
+        private async void picAvatar_Click(object? sender, EventArgs e)
+        {
+            frmProfile profileForm = new frmProfile();
+            profileForm.ShowDialog(this);
+
+            if (profileForm.LoggedOut)
+            {
+                LoggedOut = true;
+                Close();
+                return;
+            }
+
+            // Trong Profile có thể đã đăng nhập (Guest) hoặc đổi avatar
+            await ShowPlayerAsync();
+        }
+
+        private async Task OpenLoginAsync()
         {
             frmLogin loginForm = new frmLogin();
             if (loginForm.ShowDialog(this) == DialogResult.OK)
             {
-                lblAvatar.Text = Session.PlayerName;
+                await ShowPlayerAsync();
             }
         }
     }

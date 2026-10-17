@@ -13,6 +13,8 @@
 - [Dữ liệu](#dữ-liệu)
 - [Phân công](#phân-công)
 - [Roadmap](#roadmap)
+- [Triển khai lên máy host](#triển-khai-lên-máy-host)
+- [Câu hỏi bảo vệ](#câu-hỏi-bảo-vệ)
 - [Quy ước làm việc](#quy-ước-làm-việc)
 
 ## Tổng quan
@@ -27,28 +29,36 @@ Game có 3 chế độ:
 
 Ngoài ra có tài khoản (đăng ký, xác minh email, quên mật khẩu), hệ thống điểm và bậc rank, bảng xếp hạng chung, lịch sử đấu, avatar, và chat trong trận.
 
-**Trạng thái hiện tại:** đã xong bước 0 của roadmap và phần giao diện các Form (trong `CaroGame-WinForms/Forms/`, chia 3 thư mục `Account`, `Match`, `Menu`). Chưa có code logic game.
+**Trạng thái hiện tại:** đã xong phần code của toàn bộ roadmap. Còn lại các việc nhóm tự làm: kéo control cho `frmRuleVote`, thêm file âm thanh, cấu hình Gmail, triển khai server lên máy host qua Cloudflare tunnel (xem [Triển khai lên máy host](#triển-khai-lên-máy-host)).
 
 ## Kiến trúc
 
+Solution theo mô hình 3 tầng **GUI → BLL → DAL → CSDL**, cộng thêm 1 server SignalR để các máy nói chuyện với nhau:
+
 ```
-WinForms client  ⇄  Game Server (ASP.NET Core + SignalR)  ⇄  SQL Server
+CaroGame-WinForms (GUI) ──tham chiếu──► CaroGame.BLL ──tham chiếu──► CaroGame.DAL ──EF Core──► SQL Server
+        │                                    ▲
+        └──── SignalR ────► CaroGame.Server ─┘ (tham chiếu BLL)
 ```
 
-Solution `CaroGame-WinForms.slnx` gồm 3 project, cùng dùng .NET 10 (LTS):
+Solution `CaroGame-WinForms.slnx` gồm 4 project, cùng dùng .NET 10 (LTS):
 
 | Project | Loại | Vai trò |
 |---|---|---|
-| `CaroGame-WinForms` | Windows Forms App | Client. Toàn bộ giao diện. PvE và PvP Offline chạy hoàn toàn ở đây. Kết nối server bằng SignalR Client. Không truy cập DB, không chứa connection string. |
-| `CaroGame.Server` | ASP.NET Core + SignalR | Xử lý tài khoản, gửi mã email, ghép trận, xác nhận nước đi, đồng hồ, Undo và chat Online, tính điểm, bảng xếp hạng, lịch sử, upload avatar. Chứa toàn bộ phần EF Core. |
-| `CaroGame.Shared` | Class Library | Dùng chung cho Client và Server: luật chơi (kiểm tra thắng, chặn 2 đầu, nước đi hợp lệ) và các class dữ liệu truyền qua SignalR (DTO). |
+| `CaroGame.DAL` | Class Library | Tầng truy cập dữ liệu. Nơi **duy nhất** giao tiếp với CSDL, bằng EF Core. Chứa `AppDbContext`, entity, Migrations và các class `UserDAL`, `VerificationCodeDAL`... Mọi gói NuGet của solution chỉ cài ở đây. |
+| `CaroGame.BLL` | Class Library | Tầng nghiệp vụ, tham chiếu DAL. Chứa **toàn bộ** logic nghiệp vụ: luật chơi, bot, đồng hồ, tài khoản, mã xác minh, phiên đăng nhập, chat với bot, các class dữ liệu truyền qua SignalR (DTO). Không truy vấn CSDL trực tiếp, chỉ gọi DAL. |
+| `CaroGame-WinForms` | Windows Forms App | Tầng giao diện (GUI), tham chiếu BLL. Chỉ nhận thao tác và hiển thị, **không** chứa logic nghiệp vụ, **không** truy vấn CSDL. PvE và PvP Offline gọi thẳng BLL trên máy; tài khoản, BXH, Online gọi server qua SignalR. |
+| `CaroGame.Server` | ASP.NET Core + SignalR | Tham chiếu BLL. Hub chỉ nhận yêu cầu từ các máy rồi chuyển cho BLL xử lý. Là nơi duy nhất giữ connection string và mật khẩu Gmail. |
 
-### Phần EF Core (trong Server)
+Các gói NuGet (EF Core, BCrypt, SignalR Client) chỉ cài ở DAL. BLL, GUI và Server dùng được các gói đó nhờ **tham chiếu bắc cầu**: project tham chiếu tới một project khác thì dùng được cả các gói NuGet của project đó.
+
+### Phần EF Core (trong DAL)
 
 - Code First, class `AppDbContext : DbContext`.
 - Entity classes và Migrations nối với SQL Server thật.
-- Truy vấn bằng LINQ to Entities.
+- Truy vấn bằng LINQ to Entities, chỉ viết trong các class DAL.
 - Mọi thao tác CSDL dùng async/await.
+- **Không dùng ADO.NET** (`SqlConnection`, `SqlCommand`, `DataTable`, `FromSqlRaw`...) ở bất kỳ đâu trong repo.
 
 ### Giao tiếp Client và Server
 
@@ -94,10 +104,12 @@ Nếu để trống `Address` và `AppPassword` trong `appsettings.Local.json` t
 dotnet tool install --global dotnet-ef --version 10.0.13
 
 # Tạo database CaroGame trên LocalDB từ các Migration có sẵn
-dotnet ef database update --project CaroGame.Server
+dotnet ef database update --project CaroGame.DAL --startup-project CaroGame.Server
 ```
 
-Khi có Migration mới (sau khi pull code), chạy lại lệnh `dotnet ef database update` để cập nhật CSDL.
+Khi có Migration mới (sau khi pull code), chạy lại lệnh `dotnet ef database update` ở trên để cập nhật CSDL.
+
+Migration nằm trong project `CaroGame.DAL`. `--startup-project CaroGame.Server` để lệnh đọc được connection string trong `appsettings.Local.json` của Server.
 
 ### Lệnh
 
@@ -121,7 +133,7 @@ dotnet run --project CaroGame.Server/CaroGame.Server.csproj
 - Tiêu đề "Caro", 2 nút: **Chơi ngay** và **Đăng nhập**.
 - Góc trên phải có 2 icon:
   - **Information:** form hướng dẫn cho người mới, nội dung cuộn dọc.
-  - **Settings:** chỉ gồm bật/tắt âm thanh và nhạc nền.
+  - **Settings:** chỉ gồm 2 nút bấm bật/tắt âm thanh và nhạc nền. Chữ trên nút cho biết đang bật hay tắt.
 - Không có đổi ngôn ngữ.
 
 ### Chơi ngay (Guest)
@@ -384,9 +396,9 @@ Các việc dưới đây chưa có người nhận, nhóm điền tên vào.
 | Cài SQL Server LocalDB trên từng máy dev | 4 | Mỗi người tự làm |
 | Tạo Gmail gửi mã, bật xác minh 2 bước, tạo App Password | 4 | Chưa phân công |
 | Dựng Cloudflare named tunnel cho subdomain của `vernfy.com` | 4 | Chưa phân công |
-| Tải khoảng 20 ảnh PNG DiceBear (style CC0) | 5 | Chưa phân công |
+| Tải khoảng 20 ảnh PNG DiceBear (style CC0) | 5 | Đã xong (style Thumbs, trong `CaroGame-WinForms/Avatars`; nên xem lại giấy phép trên trang DiceBear) |
 | Cài SQL Server Express trên máy host demo | 7 | Chưa phân công |
-| Viết nội dung hướng dẫn cho form Information | 3 | Chưa phân công |
+| Viết nội dung hướng dẫn cho form Information | 3 | Đã xong (viết trong `frmInformation.cs`, nhóm có thể sửa lại) |
 | Tìm file âm thanh và nhạc nền | 8 | Chưa phân công |
 
 ## Roadmap
@@ -395,8 +407,8 @@ Nguyên tắc sắp xếp: có thứ chơi được sớm nhất, và thử đư
 
 ### Bước 0: Chuẩn bị solution (đã xong)
 
-- [x] Thêm project `CaroGame.Server` và `CaroGame.Shared` vào solution.
-- [x] Client và Server cùng tham chiếu `CaroGame.Shared`.
+- [x] Thêm project `CaroGame.Server`, `CaroGame.BLL`, `CaroGame.DAL` vào solution (tách 3 tầng ngày 17/10/2026).
+- [x] GUI tham chiếu BLL, BLL tham chiếu DAL, Server tham chiếu BLL.
 - [x] File cấu hình mẫu cho Client và Server.
 - [x] `.gitignore` chặn các file cấu hình chứa bí mật.
 
@@ -404,7 +416,7 @@ Nguyên tắc sắp xếp: có thứ chơi được sớm nhất, và thử đư
 
 ### Bước 1: Luật chơi và PvP Offline (đã xong)
 
-- [x] Luật chơi trong `CaroGame.Shared`: nước đi hợp lệ, kiểm tra thắng, luật chặn 2 đầu, kiểm tra hòa.
+- [x] Luật chơi trong `CaroGame.BLL`: nước đi hợp lệ, kiểm tra thắng, luật chặn 2 đầu, kiểm tra hòa.
 - [x] Vẽ bàn cờ 20x20 trên `pnlBoard` và xử lý click.
 - [x] Đồng hồ 180 giây mỗi người.
 - [x] Undo lùi 1 nước.
@@ -446,28 +458,26 @@ Nguyên tắc sắp xếp: có thứ chơi được sớm nhất, và thử đư
 **Việc hạ tầng:** LocalDB, Gmail App Password, Cloudflare tunnel.
 **Kết quả:** đăng ký và đăng nhập được từ một máy khác mạng.
 
-### Bước 5: Profile và dữ liệu người chơi
+### Bước 5: Profile và dữ liệu người chơi (đã xong)
 
-- [ ] Profile, đăng xuất, giao diện Profile của Guest.
-- [ ] Avatar mặc định và upload avatar.
-- [ ] Gửi kết quả PvE/Offline lên server, màn lịch sử đấu.
-- [ ] Bảng xếp hạng top 50 và thứ hạng của mình.
+- [x] Profile, đăng xuất, giao diện Profile của Guest.
+- [x] Avatar mặc định và upload avatar.
+- [x] Gửi kết quả PvE/Offline lên server, màn lịch sử đấu.
+- [x] Bảng xếp hạng top 50 và thứ hạng của mình.
 
 **Form cần có trước:** `frmProfile`, `frmHistory`, `frmLeaderboard` (TV3).
 **Việc hạ tầng:** bộ ảnh DiceBear.
 **Kết quả:** xong toàn bộ phần tài khoản.
 
-### Bước 6: PvP Online
+### Bước 6: PvP Online (đã xong, trừ giao diện bỏ phiếu luật)
 
-Làm lần lượt từng mục, mục trước chạy ổn mới sang mục sau.
-
-- [ ] Ghép trận tự động theo điểm, hủy tìm trận.
-- [ ] Hỏi luật chặn 2 đầu trước trận.
-- [ ] Nước đi do server xác nhận, đồng hồ chạy trên server.
-- [ ] Chat realtime.
-- [ ] Undo có xin phép, hạn 15 giây, giới hạn 3 lần bị từ chối.
-- [ ] FF, hết giờ, tính điểm rank, lưu lịch sử.
-- [ ] Mất kết nối và kết nối lại trong 30 giây.
+- [x] Ghép trận tự động theo điểm, hủy tìm trận.
+- [ ] Hỏi luật chặn 2 đầu trước trận: phần server đã xong (hết 15 giây không trả lời thì chơi luật thường). **Còn chờ TV1 kéo control cho `frmRuleVote`** (`lblQuestion`, `lblCountdown`, `btnAgree`, `btnDecline`), hiện mỗi trận phải chờ 15 giây rồi mới bắt đầu.
+- [x] Nước đi do server xác nhận, đồng hồ chạy trên server.
+- [x] Chat realtime.
+- [x] Undo có xin phép, hạn 15 giây, giới hạn 3 lần bị từ chối.
+- [x] FF, hết giờ, tính điểm rank, lưu lịch sử.
+- [x] Mất kết nối và kết nối lại trong 30 giây.
 
 **Form cần có trước:** `frmMatchmaking`, `frmRuleVote`, `frmUndoRequest` (TV1).
 **Kết quả:** chơi được trận xếp hạng giữa 2 máy.
@@ -481,11 +491,84 @@ Làm lần lượt từng mục, mục trước chạy ổn mới sang mục sau
 
 **Kết quả:** sẵn sàng demo.
 
+Hướng dẫn chi tiết ở mục [Triển khai lên máy host](#triển-khai-lên-máy-host).
+
 ### Bước 8: Hoàn thiện
 
-- [ ] Âm thanh và nhạc nền.
-- [ ] Sửa lỗi, rà lại toàn bộ luồng.
-- [ ] Ôn các câu hỏi thầy có thể hỏi cho từng phần.
+- [x] Âm thanh và nhạc nền: code đã xong. **Còn chờ file**: đặt `move.mp3` (tiếng đánh quân) và `music.mp3` (nhạc nền) vào thư mục `CaroGame-WinForms/Sounds/`. Thiếu file thì game vẫn chạy, chỉ không có tiếng.
+- [x] Nội dung form hướng dẫn (Information).
+- [x] Rà lại toàn bộ luồng: đã kiểm thử tự động luật chơi, bot, tài khoản và 2 người chơi Online qua server thật.
+- [ ] Bấm thử toàn bộ giao diện trên máy thật (cả nhóm).
+- [x] Câu hỏi thầy có thể hỏi: xem mục [Câu hỏi bảo vệ](#câu-hỏi-bảo-vệ).
+
+## Triển khai lên máy host
+
+Làm trên máy của thành viên giữ server (máy sẽ bật suốt buổi demo).
+
+### 1. Cài SQL Server Express và tạo CSDL
+
+1. Tải **SQL Server Express** (bản miễn phí) từ trang Microsoft, chọn kiểu cài **Basic**. Cài xong ghi lại tên instance, thường là `SQLEXPRESS`.
+2. Trong `CaroGame.Server/appsettings.Local.json` của máy host, đổi connection string thành:
+   ```json
+   "Default": "Server=.\\SQLEXPRESS;Database=CaroGame;Trusted_Connection=True;TrustServerCertificate=True"
+   ```
+3. Tạo CSDL:
+   ```powershell
+   dotnet ef database update --project CaroGame.DAL --startup-project CaroGame.Server
+   ```
+
+### 2. Gmail gửi mã xác minh
+
+1. Đăng nhập Gmail dùng để gửi mã, vào **Quản lý Tài khoản Google → Bảo mật**, bật **Xác minh 2 bước**.
+2. Trong ô tìm kiếm của trang tài khoản, gõ **Mật khẩu ứng dụng** (App passwords), tạo một mật khẩu tên "Caro". Google hiện 16 ký tự, chép lại (bỏ dấu cách).
+3. Điền vào `appsettings.Local.json` của máy host: `"Address": "gmail-cua-nhom@gmail.com"`, `"AppPassword": "16 ký tự vừa tạo"`.
+
+### 3. Chạy server
+
+```powershell
+dotnet run --project CaroGame.Server/CaroGame.Server.csproj --launch-profile http
+```
+
+Mở `http://localhost:5023` trên trình duyệt, thấy chữ "Caro server dang chay" là được. Giữ cửa sổ này mở suốt buổi demo.
+
+### 4. Cloudflare tunnel ra `caro.vernfy.com`
+
+Mở một cửa sổ PowerShell khác:
+
+1. Cài cloudflared: `winget install --id Cloudflare.cloudflared`
+2. Đăng nhập: `cloudflared tunnel login`. Trình duyệt mở ra, chọn domain `vernfy.com`.
+3. Tạo tunnel (làm 1 lần): `cloudflared tunnel create caro`
+4. Gắn subdomain (làm 1 lần): `cloudflared tunnel route dns caro caro.vernfy.com`
+5. Chạy tunnel (mỗi lần demo): `cloudflared tunnel run --url http://localhost:5023 caro`
+6. Mở `https://caro.vernfy.com` trên trình duyệt, thấy "Caro server dang chay" là tunnel đã thông.
+
+### 5. Cấu hình client và thử 2 máy khác mạng
+
+1. Trên **mọi máy chơi**, sửa `CaroGame-WinForms/clientsettings.json`: `"ServerUrl": "https://caro.vernfy.com"`, rồi build lại để file được copy sang thư mục chạy.
+2. Lấy 2 máy ở 2 mạng khác nhau (ví dụ 1 máy wifi, 1 máy phát 4G từ điện thoại). Đăng ký 2 tài khoản, cùng bấm PvP Online, đánh hết 1 trận.
+3. Thử thêm: Undo, chat, đầu hàng, tắt wifi 1 máy khoảng 10 giây rồi bật lại (trận phải chơi tiếp được).
+
+### 6. Phương án dự phòng (mạng trường chặn hoặc tunnel lỗi)
+
+Chạy server và SQL Server ngay trên laptop demo, để `"ServerUrl": "http://localhost:5023"` trong `clientsettings.json`, rồi mở 2 cửa sổ game trên cùng laptop để demo Online.
+
+## Câu hỏi bảo vệ
+
+| Câu hỏi | Trả lời ngắn |
+|---|---|
+| Vì sao chia 3 tầng GUI, BLL, DAL? | Mỗi tầng một việc: GUI nhận thao tác và hiển thị, BLL chứa nghiệp vụ, DAL là nơi duy nhất đọc/ghi CSDL. Sửa một tầng ít ảnh hưởng tầng khác. |
+| BLL và GUI không cài NuGet sao dùng được EF Core, BCrypt, SignalR? | Tham chiếu bắc cầu: GUI tham chiếu BLL, BLL tham chiếu DAL, nên gói cài ở DAL dùng được ở các project phía trên. |
+| Sao không dùng ADO.NET? | EF Core sinh câu SQL từ LINQ, không phải viết SQL bằng tay và tránh SQL Injection. Code của nhóm không có `SqlConnection`, `SqlCommand` nào. |
+| Luật chặn 2 đầu kiểm tra thế nào? | Từ quân vừa đặt, đếm quân cùng màu liên tiếp về 2 phía theo 4 hướng. Đủ 5 thì xét 2 ô sát 2 đầu: chỉ khi cả 2 ô đều là quân đối thủ mới không tính thắng. Ô ngoài bàn không phải quân đối thủ nên mép bàn không tính là chặn. |
+| Bot chọn nước đi thế nào? | Thắng được thì đánh, đối thủ sắp thắng thì chặn, còn lại chấm điểm từng ô trống theo độ dài hàng và số đầu còn trống của cả mình lẫn đối thủ, chọn ô điểm cao nhất. |
+| Sao mật khẩu lưu hash? | BCrypt hash 1 chiều có muối ngẫu nhiên, lộ CSDL cũng không lấy lại được mật khẩu gốc. Đăng nhập thì `BCrypt.Verify` so mật khẩu nhập với hash. |
+| Ai quyết định nước đi Online hợp lệ? | Server. Client chỉ gửi ô muốn đánh, server kiểm tra lượt, ô trống, luật rồi mới gửi `MoveMade` cho cả 2 máy; client chỉ vẽ theo tin server gửi. |
+| Sao cập nhật giao diện từ SignalR phải dùng BeginInvoke? | Tin SignalR đến trên luồng khác luồng giao diện, mà control chỉ được sửa trên luồng giao diện. Dùng BeginInvoke (không chờ) để không chặn luồng nhận tin, ví dụ đang mở hộp thoại Undo vẫn nhận được tin hết giờ để tự đóng. |
+| `lock` trong server để làm gì? | Nhiều người gọi server cùng lúc trên nhiều luồng. `lock` bắt các thao tác trên cùng 1 trận (hoặc danh sách người online) chạy lần lượt, không ghi đè lẫn nhau. |
+| Đồng hồ Online chạy ở đâu? | Ở server: `GameTickService` mỗi giây gọi `TickAsync`, trừ 1 giây của người đang tới lượt rồi gửi `ClockUpdate` cho 2 máy. Client không tự đếm nên không gian lận được. |
+| Mất kết nối giữa trận thì sao? | Server giữ phiên 30 giây và tạm dừng trận. SignalR tự kết nối lại, client gửi token để server gắn lại. Quá 30 giây thì xử thua như đầu hàng (−100) và giải phóng phiên. |
+| Tính điểm rank thế nào? | n là số quân trên bàn. Thắng: n ≤ 25 được 50, sau đó giảm dần, thấp nhất 35. Thua: tương tự, trừ ít nhất 25. Đầu hàng hoặc mất kết nối bị trừ 100. Điểm không xuống dưới 1000. |
+| Sao `await Task.Delay(1000)` mà không dùng `Thread.Sleep`? | `Thread.Sleep` làm đứng luồng giao diện, cửa sổ bị treo. `await Task.Delay` chờ mà giao diện vẫn chạy. |
 
 ## Quy ước làm việc
 
