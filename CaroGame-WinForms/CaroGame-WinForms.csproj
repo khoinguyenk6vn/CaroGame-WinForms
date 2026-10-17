@@ -1,6 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <None Remove="Resources\Nham_Coffe.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\Nham_Coffe.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <!-- File cấu hình riêng của từng máy, tự tạo từ clientsettings.example.json -->
     <None Update="clientsettings.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
