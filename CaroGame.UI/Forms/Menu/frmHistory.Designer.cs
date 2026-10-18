@@ -36,25 +36,25 @@
             // dgvHistory
             // 
             dgvHistory.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvHistory.Location = new Point(1, 0);
+            dgvHistory.Location = new Point(12, 41);
             dgvHistory.Name = "dgvHistory";
-            dgvHistory.Size = new Size(799, 375);
+            dgvHistory.Size = new Size(694, 484);
             dgvHistory.TabIndex = 0;
             // 
             // btnBack
             // 
-            btnBack.Location = new Point(1, 381);
+            btnBack.Location = new Point(12, 12);
             btnBack.Name = "btnBack";
-            btnBack.Size = new Size(118, 57);
+            btnBack.Size = new Size(75, 23);
             btnBack.TabIndex = 1;
-            btnBack.Text = "GO BACK BỜ RÔ";
+            btnBack.Text = "Back";
             btnBack.UseVisualStyleBackColor = true;
             // 
             // frmHistory
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(1008, 537);
             Controls.Add(btnBack);
             Controls.Add(dgvHistory);
             Name = "frmHistory";

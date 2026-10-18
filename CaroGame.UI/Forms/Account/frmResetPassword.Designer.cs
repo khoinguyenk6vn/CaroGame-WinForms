@@ -47,23 +47,23 @@
             // 
             // txtNewPassword
             // 
-            txtNewPassword.Location = new Point(476, 233);
+            txtNewPassword.Location = new Point(343, 157);
             txtNewPassword.Name = "txtNewPassword";
+            txtNewPassword.PlaceholderText = "Mật khẩu mới";
             txtNewPassword.Size = new Size(322, 23);
             txtNewPassword.TabIndex = 11;
-            txtNewPassword.Text = "Ô nhập mật khẩu mới";
             // 
             // txtConfirmPassword
             // 
-            txtConfirmPassword.Location = new Point(476, 301);
+            txtConfirmPassword.Location = new Point(343, 225);
             txtConfirmPassword.Name = "txtConfirmPassword";
+            txtConfirmPassword.PlaceholderText = "Xác nhận mật khẩu";
             txtConfirmPassword.Size = new Size(322, 23);
             txtConfirmPassword.TabIndex = 12;
-            txtConfirmPassword.Text = "Ô xác nhận mật khẩu";
             // 
             // btnConfirm
             // 
-            btnConfirm.Location = new Point(591, 402);
+            btnConfirm.Location = new Point(467, 322);
             btnConfirm.Name = "btnConfirm";
             btnConfirm.Size = new Size(75, 23);
             btnConfirm.TabIndex = 14;
@@ -73,7 +73,7 @@
             // lblError
             // 
             lblError.AutoSize = true;
-            lblError.Location = new Point(935, 304);
+            lblError.Location = new Point(779, 160);
             lblError.Name = "lblError";
             lblError.Size = new Size(98, 15);
             lblError.TabIndex = 17;
@@ -82,7 +82,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(591, 172);
+            label1.Location = new Point(464, 96);
             label1.Name = "label1";
             label1.Size = new Size(78, 15);
             label1.TabIndex = 18;
@@ -92,7 +92,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1278, 761);
+            ClientSize = new Size(1008, 537);
             Controls.Add(label1);
             Controls.Add(lblError);
             Controls.Add(btnConfirm);

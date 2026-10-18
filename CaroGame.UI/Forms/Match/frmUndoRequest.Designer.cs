@@ -38,7 +38,7 @@
             lblMessage.AutoSize = true;
             lblMessage.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             lblMessage.ForeColor = Color.Red;
-            lblMessage.Location = new Point(16, 52);
+            lblMessage.Location = new Point(97, 93);
             lblMessage.Name = "lblMessage";
             lblMessage.Size = new Size(521, 21);
             lblMessage.TabIndex = 0;
@@ -47,7 +47,7 @@
             // btnAccept
             // 
             btnAccept.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnAccept.Location = new Point(93, 147);
+            btnAccept.Location = new Point(211, 210);
             btnAccept.Name = "btnAccept";
             btnAccept.Size = new Size(90, 43);
             btnAccept.TabIndex = 1;
@@ -58,7 +58,7 @@
             // 
             btnDecline.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnDecline.ForeColor = Color.Red;
-            btnDecline.Location = new Point(333, 147);
+            btnDecline.Location = new Point(395, 210);
             btnDecline.Name = "btnDecline";
             btnDecline.Size = new Size(90, 43);
             btnDecline.TabIndex = 2;
@@ -70,7 +70,7 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
-            ClientSize = new Size(549, 251);
+            ClientSize = new Size(704, 366);
             Controls.Add(btnDecline);
             Controls.Add(btnAccept);
             Controls.Add(lblMessage);

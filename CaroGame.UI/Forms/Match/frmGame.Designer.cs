@@ -61,25 +61,25 @@
             // 
             // pnlBoard
             // 
-            pnlBoard.Location = new Point(1, 28);
+            pnlBoard.Location = new Point(108, 16);
             pnlBoard.Name = "pnlBoard";
-            pnlBoard.Size = new Size(606, 600);
+            pnlBoard.Size = new Size(501, 501);
             pnlBoard.TabIndex = 0;
             pnlBoard.Paint += pnlBoard_Paint;
             // 
             // picPlayer1Avatar
             // 
             picPlayer1Avatar.Image = Properties.Resources.Nham_Coffe;
-            picPlayer1Avatar.Location = new Point(3, 3);
+            picPlayer1Avatar.Location = new Point(5, 5);
             picPlayer1Avatar.Name = "picPlayer1Avatar";
-            picPlayer1Avatar.Size = new Size(150, 150);
+            picPlayer1Avatar.Size = new Size(100, 100);
             picPlayer1Avatar.SizeMode = PictureBoxSizeMode.StretchImage;
             picPlayer1Avatar.TabIndex = 3;
             picPlayer1Avatar.TabStop = false;
             // 
             // lblPlayer1Name
             // 
-            lblPlayer1Name.Location = new Point(159, 13);
+            lblPlayer1Name.Location = new Point(111, 5);
             lblPlayer1Name.Name = "lblPlayer1Name";
             lblPlayer1Name.Size = new Size(223, 30);
             lblPlayer1Name.TabIndex = 4;
@@ -87,7 +87,7 @@
             // 
             // btnGameSettings
             // 
-            btnGameSettings.Location = new Point(1, -1);
+            btnGameSettings.Location = new Point(12, 12);
             btnGameSettings.Name = "btnGameSettings";
             btnGameSettings.Size = new Size(72, 23);
             btnGameSettings.TabIndex = 1;
@@ -99,26 +99,26 @@
             // 
             pnlGameSettings.Controls.Add(btnSurrender);
             pnlGameSettings.Controls.Add(btnUndo);
-            pnlGameSettings.Location = new Point(73, -1);
+            pnlGameSettings.Location = new Point(12, 40);
             pnlGameSettings.Name = "pnlGameSettings";
-            pnlGameSettings.Size = new Size(75, 57);
+            pnlGameSettings.Size = new Size(72, 77);
             pnlGameSettings.TabIndex = 2;
             pnlGameSettings.Visible = false;
             // 
             // btnSurrender
             // 
-            btnSurrender.Location = new Point(0, 29);
+            btnSurrender.Location = new Point(19, 25);
             btnSurrender.Name = "btnSurrender";
-            btnSurrender.Size = new Size(75, 23);
+            btnSurrender.Size = new Size(53, 23);
             btnSurrender.TabIndex = 1;
             btnSurrender.Text = "FF";
             btnSurrender.UseVisualStyleBackColor = true;
             // 
             // btnUndo
             // 
-            btnUndo.Location = new Point(0, 0);
+            btnUndo.Location = new Point(19, 0);
             btnUndo.Name = "btnUndo";
-            btnUndo.Size = new Size(75, 23);
+            btnUndo.Size = new Size(53, 23);
             btnUndo.TabIndex = 0;
             btnUndo.Text = "Undo";
             btnUndo.UseVisualStyleBackColor = true;
@@ -129,14 +129,14 @@
             pnlPlayer1.Controls.Add(lblPlayer1Timer);
             pnlPlayer1.Controls.Add(lblPlayer1Name);
             pnlPlayer1.Controls.Add(picPlayer1Avatar);
-            pnlPlayer1.Location = new Point(649, 28);
+            pnlPlayer1.Location = new Point(644, 12);
             pnlPlayer1.Name = "pnlPlayer1";
-            pnlPlayer1.Size = new Size(400, 150);
+            pnlPlayer1.Size = new Size(339, 110);
             pnlPlayer1.TabIndex = 5;
             // 
             // lblPlayer1Timer
             // 
-            lblPlayer1Timer.Location = new Point(159, 43);
+            lblPlayer1Timer.Location = new Point(111, 35);
             lblPlayer1Timer.Name = "lblPlayer1Timer";
             lblPlayer1Timer.Size = new Size(223, 30);
             lblPlayer1Timer.TabIndex = 5;
@@ -144,7 +144,7 @@
             // 
             // lblTurn
             // 
-            lblTurn.Location = new Point(3, 0);
+            lblTurn.Location = new Point(5, 5);
             lblTurn.Name = "lblTurn";
             lblTurn.Size = new Size(107, 28);
             lblTurn.TabIndex = 0;
@@ -155,14 +155,14 @@
             pnlPlayer2.Controls.Add(lblPlayer2Timer);
             pnlPlayer2.Controls.Add(lblPlayer2Name);
             pnlPlayer2.Controls.Add(picPlayer2Avatar);
-            pnlPlayer2.Location = new Point(649, 201);
+            pnlPlayer2.Location = new Point(644, 128);
             pnlPlayer2.Name = "pnlPlayer2";
-            pnlPlayer2.Size = new Size(400, 150);
+            pnlPlayer2.Size = new Size(339, 110);
             pnlPlayer2.TabIndex = 6;
             // 
             // lblPlayer2Timer
             // 
-            lblPlayer2Timer.Location = new Point(159, 58);
+            lblPlayer2Timer.Location = new Point(111, 35);
             lblPlayer2Timer.Name = "lblPlayer2Timer";
             lblPlayer2Timer.Size = new Size(223, 30);
             lblPlayer2Timer.TabIndex = 7;
@@ -170,7 +170,7 @@
             // 
             // lblPlayer2Name
             // 
-            lblPlayer2Name.Location = new Point(159, 28);
+            lblPlayer2Name.Location = new Point(111, 5);
             lblPlayer2Name.Name = "lblPlayer2Name";
             lblPlayer2Name.Size = new Size(223, 30);
             lblPlayer2Name.TabIndex = 6;
@@ -179,9 +179,9 @@
             // picPlayer2Avatar
             // 
             picPlayer2Avatar.Image = Properties.Resources.Nham_Coffe;
-            picPlayer2Avatar.Location = new Point(3, 0);
+            picPlayer2Avatar.Location = new Point(5, 5);
             picPlayer2Avatar.Name = "picPlayer2Avatar";
-            picPlayer2Avatar.Size = new Size(150, 150);
+            picPlayer2Avatar.Size = new Size(100, 100);
             picPlayer2Avatar.SizeMode = PictureBoxSizeMode.StretchImage;
             picPlayer2Avatar.TabIndex = 6;
             picPlayer2Avatar.TabStop = false;
@@ -194,16 +194,16 @@
             pnlChatBox.Controls.Add(lblConnectionStatus);
             pnlChatBox.Controls.Add(lblRule);
             pnlChatBox.Controls.Add(lblTurn);
-            pnlChatBox.Location = new Point(649, 374);
+            pnlChatBox.Location = new Point(644, 241);
             pnlChatBox.Name = "pnlChatBox";
-            pnlChatBox.Size = new Size(400, 238);
+            pnlChatBox.Size = new Size(339, 276);
             pnlChatBox.TabIndex = 6;
             // 
             // btnSendChat
             // 
-            btnSendChat.Location = new Point(342, 196);
+            btnSendChat.Location = new Point(296, 241);
             btnSendChat.Name = "btnSendChat";
-            btnSendChat.Size = new Size(55, 23);
+            btnSendChat.Size = new Size(40, 23);
             btnSendChat.TabIndex = 5;
             btnSendChat.Text = "Gửi";
             btnSendChat.UseVisualStyleBackColor = true;
@@ -211,22 +211,22 @@
             // 
             // txtChatInput
             // 
-            txtChatInput.Location = new Point(3, 197);
+            txtChatInput.Location = new Point(5, 241);
             txtChatInput.Name = "txtChatInput";
-            txtChatInput.Size = new Size(333, 23);
+            txtChatInput.Size = new Size(285, 23);
             txtChatInput.TabIndex = 4;
             // 
             // listBoxChat
             // 
             listBoxChat.FormattingEnabled = true;
-            listBoxChat.Location = new Point(3, 31);
+            listBoxChat.Location = new Point(5, 36);
             listBoxChat.Name = "listBoxChat";
-            listBoxChat.Size = new Size(394, 199);
+            listBoxChat.Size = new Size(331, 199);
             listBoxChat.TabIndex = 3;
             // 
             // lblConnectionStatus
             // 
-            lblConnectionStatus.Location = new Point(229, 0);
+            lblConnectionStatus.Location = new Point(231, 5);
             lblConnectionStatus.Name = "lblConnectionStatus";
             lblConnectionStatus.Size = new Size(107, 28);
             lblConnectionStatus.TabIndex = 2;
@@ -234,7 +234,7 @@
             // 
             // lblRule
             // 
-            lblRule.Location = new Point(116, 0);
+            lblRule.Location = new Point(118, 5);
             lblRule.Name = "lblRule";
             lblRule.Size = new Size(107, 28);
             lblRule.TabIndex = 1;
@@ -254,7 +254,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1168, 627);
+            ClientSize = new Size(1008, 537);
             Controls.Add(pnlChatBox);
             Controls.Add(pnlPlayer2);
             Controls.Add(pnlPlayer1);
@@ -262,6 +262,7 @@
             Controls.Add(btnGameSettings);
             Controls.Add(pnlBoard);
             Name = "frmGame";
+            Text = "frmGame";
             Load += frmGame_Load;
             ((System.ComponentModel.ISupportInitialize)picPlayer1Avatar).EndInit();
             pnlGameSettings.ResumeLayout(false);

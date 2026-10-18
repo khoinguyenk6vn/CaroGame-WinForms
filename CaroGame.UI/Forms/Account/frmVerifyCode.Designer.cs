@@ -49,7 +49,7 @@
             // lblMessage
             // 
             lblMessage.AutoSize = true;
-            lblMessage.Location = new Point(535, 161);
+            lblMessage.Location = new Point(380, 94);
             lblMessage.Name = "lblMessage";
             lblMessage.Size = new Size(241, 15);
             lblMessage.TabIndex = 11;
@@ -58,7 +58,7 @@
             // lblResendCountdown
             // 
             lblResendCountdown.AutoSize = true;
-            lblResendCountdown.Location = new Point(520, 276);
+            lblResendCountdown.Location = new Point(360, 188);
             lblResendCountdown.Name = "lblResendCountdown";
             lblResendCountdown.Size = new Size(138, 15);
             lblResendCountdown.TabIndex = 12;
@@ -66,15 +66,15 @@
             // 
             // txtCode
             // 
-            txtCode.Location = new Point(520, 241);
+            txtCode.Location = new Point(360, 162);
             txtCode.Name = "txtCode";
-            txtCode.Size = new Size(155, 23);
+            txtCode.PlaceholderText = "Code";
+            txtCode.Size = new Size(216, 23);
             txtCode.TabIndex = 13;
-            txtCode.Text = "Code";
             // 
             // btnConfirm
             // 
-            btnConfirm.Location = new Point(613, 449);
+            btnConfirm.Location = new Point(469, 312);
             btnConfirm.Name = "btnConfirm";
             btnConfirm.Size = new Size(75, 23);
             btnConfirm.TabIndex = 14;
@@ -83,7 +83,7 @@
             // 
             // btnResend
             // 
-            btnResend.Location = new Point(740, 240);
+            btnResend.Location = new Point(582, 162);
             btnResend.Name = "btnResend";
             btnResend.Size = new Size(75, 23);
             btnResend.TabIndex = 15;
@@ -93,7 +93,7 @@
             // lblError
             // 
             lblError.AutoSize = true;
-            lblError.Location = new Point(951, 300);
+            lblError.Location = new Point(783, 166);
             lblError.Name = "lblError";
             lblError.Size = new Size(98, 15);
             lblError.TabIndex = 16;
@@ -103,7 +103,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1278, 761);
+            ClientSize = new Size(1008, 537);
             Controls.Add(lblError);
             Controls.Add(btnResend);
             Controls.Add(btnConfirm);
