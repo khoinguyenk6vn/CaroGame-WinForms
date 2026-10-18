@@ -17,6 +17,7 @@ namespace CaroGame.UI.Forms.Menu
         public frmModeSelect()
         {
             InitializeComponent();
+            new FormScaler(this);
 
             // Gắn các sự kiện chưa được gắn trong Designer
             btnPvE.Click += btnPvE_Click;
@@ -25,6 +26,30 @@ namespace CaroGame.UI.Forms.Menu
             btnLeaderboard.Click += btnLeaderboard_Click;
             picAvatar.Click += picAvatar_Click;
             Load += frmModeSelect_Load;
+
+            // Phím tắt: 1 = PvE, 2 = PvP Offline, 3 = PvP Online, 4 = Bảng xếp hạng
+            KeyPreview = true;
+            KeyDown += frmModeSelect_KeyDown;
+        }
+
+        private void frmModeSelect_KeyDown(object? sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.D1 || e.KeyCode == Keys.NumPad1)
+            {
+                btnPvE_Click(btnPvE, EventArgs.Empty);
+            }
+            else if (e.KeyCode == Keys.D2 || e.KeyCode == Keys.NumPad2)
+            {
+                btnPvPOffline_Click(btnPvPOffline, EventArgs.Empty);
+            }
+            else if (e.KeyCode == Keys.D3 || e.KeyCode == Keys.NumPad3)
+            {
+                btnPvPOnline_Click(btnPvPOnline, EventArgs.Empty);
+            }
+            else if (e.KeyCode == Keys.D4 || e.KeyCode == Keys.NumPad4)
+            {
+                btnLeaderboard_Click(btnLeaderboard, EventArgs.Empty);
+            }
         }
 
         private async void frmModeSelect_Load(object? sender, EventArgs e)

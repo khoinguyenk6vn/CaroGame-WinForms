@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using CaroGame.UI.Services;
 
 namespace CaroGame.UI.Forms.Menu
 {
@@ -13,6 +14,10 @@ namespace CaroGame.UI.Forms.Menu
         public frmInformation()
         {
             InitializeComponent();
+            new FormScaler(this);
+
+            // Phím tắt: Esc = btnClose
+            CancelButton = btnClose;
 
             btnClose.Click += btnClose_Click;
             rtbGuide.Text = GuideText;

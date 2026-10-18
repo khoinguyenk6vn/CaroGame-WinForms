@@ -11,6 +11,11 @@ namespace CaroGame.UI.Forms.Account
         public frmForgotPassword()
         {
             InitializeComponent();
+            new FormScaler(this);
+
+            // Phím tắt: Enter = btnSendCode, Esc = btnBack
+            AcceptButton = btnSendCode;
+            CancelButton = btnBack;
             lblError.Text = "";
 
             // Gắn các sự kiện chưa được gắn trong Designer

@@ -10,6 +10,10 @@ namespace CaroGame.UI.Forms.Menu
         public frmHistory()
         {
             InitializeComponent();
+            new FormScaler(this);
+
+            // Phím tắt: Esc = btnBack
+            CancelButton = btnBack;
 
             // Gắn các sự kiện chưa được gắn trong Designer
             btnBack.Click += btnBack_Click;

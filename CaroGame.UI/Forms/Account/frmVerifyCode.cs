@@ -18,6 +18,11 @@ namespace CaroGame.UI.Forms.Account
         public frmVerifyCode(string email, CodePurpose purpose)
         {
             InitializeComponent();
+            new FormScaler(this);
+
+            // Phím tắt: Enter = btnConfirm, Esc = btnBack
+            AcceptButton = btnConfirm;
+            CancelButton = btnBack;
             this.email = email;
             this.purpose = purpose;
 

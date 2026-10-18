@@ -9,6 +9,10 @@ namespace CaroGame.UI.Forms.Menu
         public frmSettings()
         {
             InitializeComponent();
+            new FormScaler(this);
+
+            // Phím tắt: Esc = btnClose
+            CancelButton = btnClose;
 
             // Gắn các sự kiện chưa được gắn trong Designer
             btnSound.Click += btnSound_Click;

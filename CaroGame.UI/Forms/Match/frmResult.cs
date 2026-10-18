@@ -1,4 +1,6 @@
-﻿namespace CaroGame.UI.Forms.Match
+﻿using CaroGame.UI.Services;
+
+namespace CaroGame.UI.Forms.Match
 {
     // Hộp thoại kết quả trận.
     // Trả về DialogResult.Retry nếu chọn "Chơi lại"/"Tìm trận mới", DialogResult.Cancel nếu chọn "Về menu".
@@ -9,6 +11,11 @@
         public frmResult(string resultText, string modeText, string reasonText, string scoreText, string playAgainText)
         {
             InitializeComponent();
+            new FormScaler(this);
+
+            // Phím tắt: Enter = btnPlayAgain, Esc = btnBackToMenu
+            AcceptButton = btnPlayAgain;
+            CancelButton = btnBackToMenu;
 
             // Gắn các sự kiện chưa được gắn trong Designer
             btnPlayAgain.Click += btnPlayAgain_Click;

@@ -1,4 +1,6 @@
-﻿namespace CaroGame.UI.Forms.Match
+﻿using CaroGame.UI.Services;
+
+namespace CaroGame.UI.Forms.Match
 {
     // Hộp thoại hỏi có đồng ý cho đối thủ đi lại không.
     // Trả về DialogResult.Yes (đồng ý), DialogResult.No (từ chối),
@@ -8,6 +10,11 @@
         public frmUndoRequest()
         {
             InitializeComponent();
+            new FormScaler(this);
+
+            // Phím tắt: Enter = btnAccept, Esc = btnDecline
+            AcceptButton = btnAccept;
+            CancelButton = btnDecline;
 
             // Gắn các sự kiện chưa được gắn trong Designer
             btnAccept.Click += btnAccept_Click;

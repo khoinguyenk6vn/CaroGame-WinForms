@@ -16,6 +16,10 @@ namespace CaroGame.UI.Forms.Menu
         public frmProfile()
         {
             InitializeComponent();
+            new FormScaler(this);
+
+            // Phím tắt: Esc = btnBack
+            CancelButton = btnBack;
 
             // Gắn các sự kiện chưa được gắn trong Designer
             btnChangeAvatar.Click += btnChangeAvatar_Click;
