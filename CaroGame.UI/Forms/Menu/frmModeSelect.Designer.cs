@@ -41,7 +41,7 @@
             // 
             // btnPvE
             // 
-            btnPvE.Location = new Point(323, 168);
+            btnPvE.Location = new Point(437, 221);
             btnPvE.Name = "btnPvE";
             btnPvE.Size = new Size(103, 23);
             btnPvE.TabIndex = 0;
@@ -50,7 +50,7 @@
             // 
             // btnPvPOnline
             // 
-            btnPvPOnline.Location = new Point(323, 248);
+            btnPvPOnline.Location = new Point(437, 301);
             btnPvPOnline.Name = "btnPvPOnline";
             btnPvPOnline.Size = new Size(103, 23);
             btnPvPOnline.TabIndex = 1;
@@ -59,7 +59,7 @@
             // 
             // btnPvPOffline
             // 
-            btnPvPOffline.Location = new Point(323, 207);
+            btnPvPOffline.Location = new Point(437, 260);
             btnPvPOffline.Name = "btnPvPOffline";
             btnPvPOffline.Size = new Size(103, 23);
             btnPvPOffline.TabIndex = 2;
@@ -69,26 +69,26 @@
             // picAvatar
             // 
             picAvatar.Image = Properties.Resources.Nham_Coffe;
-            picAvatar.Location = new Point(46, 107);
+            picAvatar.Location = new Point(39, 157);
             picAvatar.Name = "picAvatar";
-            picAvatar.Size = new Size(123, 123);
+            picAvatar.Size = new Size(100, 100);
             picAvatar.SizeMode = PictureBoxSizeMode.StretchImage;
             picAvatar.TabIndex = 3;
             picAvatar.TabStop = false;
             // 
             // btnLeaderboard
             // 
-            btnLeaderboard.Location = new Point(635, 80);
+            btnLeaderboard.Location = new Point(915, 27);
             btnLeaderboard.Name = "btnLeaderboard";
             btnLeaderboard.Size = new Size(75, 23);
             btnLeaderboard.TabIndex = 4;
-            btnLeaderboard.Text = "BXH";
+            btnLeaderboard.Text = "🏆Rankings";
             btnLeaderboard.UseVisualStyleBackColor = true;
             // 
             // lblAvatar
             // 
             lblAvatar.AutoSize = true;
-            lblAvatar.Location = new Point(62, 80);
+            lblAvatar.Location = new Point(39, 111);
             lblAvatar.Name = "lblAvatar";
             lblAvatar.Size = new Size(86, 15);
             lblAvatar.TabIndex = 5;
@@ -97,27 +97,28 @@
             // lblLeaderBoard
             // 
             lblLeaderBoard.AutoSize = true;
-            lblLeaderBoard.Location = new Point(620, 45);
+            lblLeaderBoard.Location = new Point(911, 9);
             lblLeaderBoard.Name = "lblLeaderBoard";
-            lblLeaderBoard.Size = new Size(109, 15);
+            lblLeaderBoard.Size = new Size(85, 15);
             lblLeaderBoard.TabIndex = 6;
-            lblLeaderBoard.Text = "TOP BXHHHHHH!!!";
+            lblLeaderBoard.Text = "Bảng xếp hạng";
             // 
             // lblTitle
             // 
             lblTitle.AutoSize = true;
             lblTitle.Font = new Font("Segoe UI", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblTitle.Location = new Point(228, 54);
+            lblTitle.Location = new Point(328, 94);
             lblTitle.Name = "lblTitle";
             lblTitle.Size = new Size(320, 32);
             lblTitle.TabIndex = 7;
             lblTitle.Text = "CHẾ ĐỘ CHƠI NHA BỜ RÔ ";
+            lblTitle.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // frmModeSelect
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(759, 450);
+            ClientSize = new Size(1008, 537);
             Controls.Add(lblTitle);
             Controls.Add(lblLeaderBoard);
             Controls.Add(lblAvatar);

@@ -40,7 +40,7 @@
             // 
             // btnPlayNow
             // 
-            btnPlayNow.Location = new Point(356, 140);
+            btnPlayNow.Location = new Point(328, 202);
             btnPlayNow.Name = "btnPlayNow";
             btnPlayNow.Size = new Size(75, 23);
             btnPlayNow.TabIndex = 0;
@@ -49,7 +49,7 @@
             // 
             // btnLogin
             // 
-            btnLogin.Location = new Point(356, 181);
+            btnLogin.Location = new Point(584, 202);
             btnLogin.Name = "btnLogin";
             btnLogin.Size = new Size(75, 23);
             btnLogin.TabIndex = 1;
@@ -61,7 +61,7 @@
             toolStripSettings.Items.AddRange(new ToolStripItem[] { toolStripButton1, toolStripButton2 });
             toolStripSettings.Location = new Point(0, 0);
             toolStripSettings.Name = "toolStripSettings";
-            toolStripSettings.Size = new Size(800, 25);
+            toolStripSettings.Size = new Size(1008, 25);
             toolStripSettings.TabIndex = 2;
             toolStripSettings.Text = "toolStrip1";
             // 
@@ -86,17 +86,17 @@
             // lblTitle
             // 
             lblTitle.AutoSize = true;
-            lblTitle.Location = new Point(318, 38);
+            lblTitle.Location = new Point(456, 98);
             lblTitle.Name = "lblTitle";
-            lblTitle.Size = new Size(141, 15);
+            lblTitle.Size = new Size(75, 15);
             lblTitle.TabIndex = 3;
-            lblTitle.Text = "CARO GAMESSSSSSSSSSS";
+            lblTitle.Text = "CARO GAME";
             // 
             // frmStart
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(1008, 537);
             Controls.Add(lblTitle);
             Controls.Add(toolStripSettings);
             Controls.Add(btnLogin);

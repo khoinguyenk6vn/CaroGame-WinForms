@@ -28,10 +28,16 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Text = "frmRuleVote";
+            SuspendLayout();
+            // 
+            // frmRuleVote
+            // 
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(1008, 537);
+            Name = "frmRuleVote";
+            Text = "frmRuleVote";
+            ResumeLayout(false);
         }
 
         #endregion

@@ -45,7 +45,7 @@
             // pictureBox1
             // 
             pictureBox1.Image = Properties.Resources.Nham_Coffe;
-            pictureBox1.Location = new Point(12, 41);
+            pictureBox1.Location = new Point(160, 121);
             pictureBox1.Name = "pictureBox1";
             pictureBox1.Size = new Size(123, 123);
             pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
@@ -55,7 +55,7 @@
             // lblUsername
             // 
             lblUsername.AutoSize = true;
-            lblUsername.Location = new Point(233, 41);
+            lblUsername.Location = new Point(473, 124);
             lblUsername.Name = "lblUsername";
             lblUsername.Size = new Size(71, 15);
             lblUsername.TabIndex = 1;
@@ -64,7 +64,7 @@
             // lblTitle1
             // 
             lblTitle1.AutoSize = true;
-            lblTitle1.Location = new Point(156, 41);
+            lblTitle1.Location = new Point(396, 124);
             lblTitle1.Name = "lblTitle1";
             lblTitle1.Size = new Size(45, 15);
             lblTitle1.TabIndex = 2;
@@ -73,7 +73,7 @@
             // lblTitle2
             // 
             lblTitle2.AutoSize = true;
-            lblTitle2.Location = new Point(156, 78);
+            lblTitle2.Location = new Point(396, 165);
             lblTitle2.Name = "lblTitle2";
             lblTitle2.Size = new Size(42, 15);
             lblTitle2.TabIndex = 3;
@@ -82,7 +82,7 @@
             // lblScore
             // 
             lblScore.AutoSize = true;
-            lblScore.Location = new Point(233, 78);
+            lblScore.Location = new Point(473, 165);
             lblScore.Name = "lblScore";
             lblScore.Size = new Size(83, 15);
             lblScore.TabIndex = 4;
@@ -91,7 +91,7 @@
             // lblRank
             // 
             lblRank.AutoSize = true;
-            lblRank.Location = new Point(156, 116);
+            lblRank.Location = new Point(396, 206);
             lblRank.Name = "lblRank";
             lblRank.Size = new Size(80, 15);
             lblRank.TabIndex = 5;
@@ -99,7 +99,7 @@
             // 
             // btnChangeAvatar
             // 
-            btnChangeAvatar.Location = new Point(12, 193);
+            btnChangeAvatar.Location = new Point(160, 260);
             btnChangeAvatar.Name = "btnChangeAvatar";
             btnChangeAvatar.Size = new Size(123, 23);
             btnChangeAvatar.TabIndex = 6;
@@ -108,7 +108,7 @@
             // 
             // btnHistory
             // 
-            btnHistory.Location = new Point(211, 193);
+            btnHistory.Location = new Point(396, 263);
             btnHistory.Name = "btnHistory";
             btnHistory.Size = new Size(75, 23);
             btnHistory.TabIndex = 7;
@@ -117,7 +117,7 @@
             // 
             // btnLogout
             // 
-            btnLogout.Location = new Point(362, 193);
+            btnLogout.Location = new Point(528, 263);
             btnLogout.Name = "btnLogout";
             btnLogout.Size = new Size(75, 23);
             btnLogout.TabIndex = 8;
@@ -126,7 +126,7 @@
             // 
             // btnLoginToSave
             // 
-            btnLoginToSave.Location = new Point(266, 262);
+            btnLoginToSave.Location = new Point(446, 331);
             btnLoginToSave.Name = "btnLoginToSave";
             btnLoginToSave.Size = new Size(110, 23);
             btnLoginToSave.TabIndex = 9;
@@ -135,7 +135,7 @@
             // 
             // btnBack
             // 
-            btnBack.Location = new Point(513, 193);
+            btnBack.Location = new Point(12, 12);
             btnBack.Name = "btnBack";
             btnBack.Size = new Size(75, 23);
             btnBack.TabIndex = 10;
@@ -146,7 +146,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(627, 324);
+            ClientSize = new Size(1008, 537);
             Controls.Add(btnBack);
             Controls.Add(btnLoginToSave);
             Controls.Add(btnLogout);

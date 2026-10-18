@@ -36,7 +36,7 @@
             // lblStatus
             // 
             lblStatus.AutoSize = true;
-            lblStatus.Location = new Point(119, 44);
+            lblStatus.Location = new Point(243, 80);
             lblStatus.Name = "lblStatus";
             lblStatus.Size = new Size(193, 15);
             lblStatus.TabIndex = 0;
@@ -46,7 +46,7 @@
             // lblTimer
             // 
             lblTimer.AutoSize = true;
-            lblTimer.Location = new Point(160, 85);
+            lblTimer.Location = new Point(290, 120);
             lblTimer.Name = "lblTimer";
             lblTimer.Size = new Size(95, 15);
             lblTimer.TabIndex = 1;
@@ -54,7 +54,7 @@
             // 
             // btnCancel
             // 
-            btnCancel.Location = new Point(145, 141);
+            btnCancel.Location = new Point(276, 196);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(125, 23);
             btnCancel.TabIndex = 2;
@@ -66,7 +66,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(414, 213);
+            ClientSize = new Size(704, 366);
             Controls.Add(btnCancel);
             Controls.Add(lblTimer);
             Controls.Add(lblStatus);

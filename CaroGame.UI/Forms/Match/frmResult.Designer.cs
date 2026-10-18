@@ -38,18 +38,18 @@
             // lblResultStatus
             // 
             lblResultStatus.Font = new Font("Segoe UI", 24F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblResultStatus.Location = new Point(95, 26);
+            lblResultStatus.Location = new Point(225, 55);
             lblResultStatus.Name = "lblResultStatus";
-            lblResultStatus.Size = new Size(269, 45);
+            lblResultStatus.Size = new Size(253, 45);
             lblResultStatus.TabIndex = 0;
             lblResultStatus.Text = "Thất Bại";
-            lblResultStatus.TextAlign = ContentAlignment.MiddleLeft;
+            lblResultStatus.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // lblGameMode
             // 
             lblGameMode.AutoSize = true;
             lblGameMode.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            lblGameMode.Location = new Point(46, 92);
+            lblGameMode.Location = new Point(225, 142);
             lblGameMode.Name = "lblGameMode";
             lblGameMode.Size = new Size(108, 21);
             lblGameMode.TabIndex = 1;
@@ -59,7 +59,7 @@
             // 
             lblEloChange.AutoSize = true;
             lblEloChange.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            lblEloChange.Location = new Point(46, 130);
+            lblEloChange.Location = new Point(225, 173);
             lblEloChange.Name = "lblEloChange";
             lblEloChange.Size = new Size(101, 21);
             lblEloChange.TabIndex = 2;
@@ -67,7 +67,7 @@
             // 
             // btnPlayAgain
             // 
-            btnPlayAgain.Location = new Point(46, 165);
+            btnPlayAgain.Location = new Point(225, 257);
             btnPlayAgain.Name = "btnPlayAgain";
             btnPlayAgain.Size = new Size(111, 23);
             btnPlayAgain.TabIndex = 3;
@@ -76,7 +76,7 @@
             // 
             // btnBackToMenu
             // 
-            btnBackToMenu.Location = new Point(253, 165);
+            btnBackToMenu.Location = new Point(367, 257);
             btnBackToMenu.Name = "btnBackToMenu";
             btnBackToMenu.Size = new Size(111, 23);
             btnBackToMenu.TabIndex = 4;
@@ -87,7 +87,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(412, 234);
+            ClientSize = new Size(704, 366);
             Controls.Add(btnBackToMenu);
             Controls.Add(btnPlayAgain);
             Controls.Add(lblEloChange);

@@ -54,7 +54,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(1008, 537);
             Controls.Add(btnBack);
             Controls.Add(dgvLeaderboard);
             Name = "frmLeaderboard";

@@ -32,18 +32,18 @@
             btnMusic = new Button();
             btnClose = new Button();
             SuspendLayout();
-            //
+            // 
             // btnSound
-            //
+            // 
             btnSound.Location = new Point(77, 37);
             btnSound.Name = "btnSound";
             btnSound.Size = new Size(150, 23);
             btnSound.TabIndex = 0;
             btnSound.Text = "Âm thanh: Bật";
             btnSound.UseVisualStyleBackColor = true;
-            //
+            // 
             // btnMusic
-            //
+            // 
             btnMusic.Location = new Point(77, 81);
             btnMusic.Name = "btnMusic";
             btnMusic.Size = new Size(150, 23);
@@ -64,14 +64,13 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(468, 213);
+            ClientSize = new Size(1008, 537);
             Controls.Add(btnClose);
             Controls.Add(btnMusic);
             Controls.Add(btnSound);
             Name = "frmSettings";
             Text = "frmSettings";
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
