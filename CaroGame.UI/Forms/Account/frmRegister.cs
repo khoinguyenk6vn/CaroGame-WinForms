@@ -11,6 +11,11 @@ namespace CaroGame.UI.Forms.Account
         public frmRegister()
         {
             InitializeComponent();
+            new FormScaler(this);
+
+            // Phím tắt: Enter = btnContinue, Esc = btnBack
+            AcceptButton = btnContinue;
+            CancelButton = btnBack;
             lblError.Text = "";
 
             // Gắn các sự kiện chưa được gắn trong Designer

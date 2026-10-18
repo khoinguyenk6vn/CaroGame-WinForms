@@ -15,6 +15,10 @@ namespace CaroGame.UI.Forms.Match
         public frmMatchmaking()
         {
             InitializeComponent();
+            new FormScaler(this);
+
+            // Phím tắt: Esc = btnCancel
+            CancelButton = btnCancel;
             FormClosing += frmMatchmaking_FormClosing;
         }
 

@@ -62,9 +62,73 @@ namespace CaroGame.UI.Forms.Match
         // Gắn các sự kiện chưa được gắn trong Designer
         private void AttachCommonEvents()
         {
+            // Phóng to cửa sổ thì toàn bộ giao diện giãn theo
+            new FormScaler(this);
+
             pnlBoard.MouseClick += pnlBoard_MouseClick;
+            pnlBoard.Resize += pnlBoard_Resize;
             btnSurrender.Click += btnSurrender_Click;
             FormClosing += frmGame_FormClosing;
+            Shown += frmGame_Shown;
+
+            // Phím tắt: Enter gửi chat (AcceptButton là nút được "bấm" khi nhấn Enter),
+            // Ctrl+Z Undo, Ctrl+Q đầu hàng. KeyPreview = true để Form nhận phím trước control đang được chọn.
+            AcceptButton = btnSendChat;
+            KeyPreview = true;
+            KeyDown += frmGame_KeyDown;
+        }
+
+        private void frmGame_KeyDown(object? sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.Z)
+            {
+                btnUndo_Click(btnUndo, EventArgs.Empty);
+                e.Handled = true;
+            }
+            else if (e.Control && e.KeyCode == Keys.Q)
+            {
+                btnSurrender_Click(btnSurrender, EventArgs.Empty);
+                e.Handled = true;
+            }
+        }
+
+        // Cửa sổ phóng to thì Panel bàn cờ to theo: tính lại kích thước ô rồi vẽ lại
+        private void pnlBoard_Resize(object? sender, EventArgs e)
+        {
+            cellSize = Math.Min(pnlBoard.Width, pnlBoard.Height) / Board.Size;
+            pnlBoard.Invalidate();
+        }
+
+        // Trận Online: cửa sổ trận hiện lên rồi mới hỏi luật chặn 2 đầu
+        private async void frmGame_Shown(object? sender, EventArgs e)
+        {
+            if (onlineMatch != null)
+            {
+                await AskBlockRuleAsync();
+            }
+        }
+
+        // Hỏi người chơi có dùng luật chặn 2 đầu không. Cần CẢ 2 người đồng ý thì luật mới được bật
+        // (server quyết định). Server chỉ chờ 15 giây: trả lời trễ thì trận đã bắt đầu với luật thường.
+        private async Task AskBlockRuleAsync()
+        {
+            DialogResult answer = MessageBox.Show(this,
+                "Bạn có muốn chơi luật chặn 2 đầu không?\n(Cần cả 2 người đồng ý, trả lời trong 15 giây)",
+                "Luật chơi", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (hub == null || onlineMatch!.IsStarted)
+            {
+                return;
+            }
+
+            try
+            {
+                await hub.InvokeAsync("VoteRule", answer == DialogResult.Yes);
+            }
+            catch (Exception)
+            {
+                lblConnectionStatus.Text = "Không gửi được lựa chọn luật.";
+            }
         }
 
         private Board CurrentBoard

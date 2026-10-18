@@ -10,6 +10,10 @@ namespace CaroGame.UI.Forms.Menu
         public frmStart()
         {
             InitializeComponent();
+            new FormScaler(this);
+
+            // Phím tắt: Enter = btnPlayNow
+            AcceptButton = btnPlayNow;
 
             // Gắn các sự kiện chưa được gắn trong Designer
             btnPlayNow.Click += btnPlayNow_Click;

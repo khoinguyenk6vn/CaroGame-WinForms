@@ -29,7 +29,7 @@ Game có 3 chế độ:
 
 Ngoài ra có tài khoản (đăng ký, xác minh email, quên mật khẩu), hệ thống điểm và bậc rank, bảng xếp hạng chung, lịch sử đấu, avatar, và chat trong trận.
 
-**Trạng thái hiện tại:** đã xong phần code của toàn bộ roadmap. Còn lại các việc nhóm tự làm: kéo control cho `frmRuleVote`, thêm file âm thanh, cấu hình Gmail, triển khai server lên máy host qua Cloudflare tunnel (xem [Triển khai lên máy host](#triển-khai-lên-máy-host)).
+**Trạng thái hiện tại:** đã xong phần code của toàn bộ roadmap; server thật chạy qua `https://caro.vernfy.com` và đã chơi Online được. Còn lại: thêm file âm thanh, sửa lỗi vặt. Hướng dẫn chạy server xem [Triển khai lên máy host](#triển-khai-lên-máy-host).
 
 ## Kiến trúc
 
@@ -214,6 +214,26 @@ Chi tiết phần chat với AI:
 
 Chưa có file âm thanh và nhạc nền. Chức năng được thiết kế sẵn chỗ phát (bật/tắt trong Settings), file sẽ thêm sau. Thiếu file thì game vẫn chạy bình thường, không báo lỗi.
 
+### Phím tắt
+
+| Màn hình | Phím | Tác dụng |
+|---|---|---|
+| Màn mở app | Enter | Chơi ngay |
+| Đăng nhập, Đăng ký | Enter / Esc | Tiếp tục / Quay lại |
+| Nhập mã, Đặt mật khẩu mới | Enter / Esc | Xác nhận / Quay lại |
+| Quên mật khẩu | Enter / Esc | Gửi mã / Quay lại |
+| Chọn chế độ | 1 / 2 / 3 / 4 | PvE / PvP Offline / PvP Online / Bảng xếp hạng |
+| Profile, Lịch sử, Bảng xếp hạng | Esc | Quay lại |
+| Hướng dẫn, Cài đặt | Esc | Đóng |
+| Tìm trận | Esc | Dừng tìm trận |
+| Trận đấu | Enter | Gửi tin nhắn chat |
+| Trận đấu | Ctrl+Z | Undo |
+| Trận đấu | Ctrl+Q | Đầu hàng (FF) |
+| Kết quả trận | Enter / Esc | Chơi lại hoặc Tìm trận mới / Về menu |
+| Đối thủ xin Undo | Enter / Esc | Đồng ý / Từ chối |
+
+Cửa sổ nào cũng phóng to được (nút Maximize); khi phóng to, toàn bộ giao diện giãn theo cho tràn màn hình.
+
 ## Luật chơi
 
 ### Thắng thua
@@ -363,7 +383,7 @@ Tên Form và tên control dưới đây là tên đề xuất, theo tiền tố
 | `frmGame` | TV1 | `pnlBoard`, `btnGameSettings`, `pnlGameSettings` (chứa `btnUndo`, `btnSurrender`), `picPlayer1Avatar`, `lblPlayer1Name`, `lblPlayer1Timer`, `picPlayer2Avatar`, `lblPlayer2Name`, `lblPlayer2Timer`, `lstChat`, `txtChatInput`, `btnSendChat`, `lblTurn`, `lblRule`, `lblConnectionStatus` |
 | `frmResult` | TV1 | `lblResult`, `lblReason`, `lblScoreChange`, `btnPlayAgain`, `btnBackToMenu` |
 | `frmUndoRequest` | TV1 | `lblMessage`, `lblCountdown`, `btnAccept`, `btnDecline` |
-| `frmRuleVote` | TV1 | `lblQuestion`, `lblCountdown`, `btnAgree`, `btnDecline` |
+| `frmRuleVote` | TV1 | Không dùng nữa: hỏi luật chặn 2 đầu bằng MessageBox (nhóm chốt ngày 18/10/2026) |
 | `frmMatchmaking` | TV1 | `lblStatus`, `lblWaitTime`, `btnCancel` |
 | `frmRegister` | TV2 | `txtUsername`, `txtEmail`, `txtPassword`, `txtConfirmPassword`, `btnContinue`, `lnkLogin`, `btnBack`, `lblError` |
 | `frmLogin` | TV2 | `txtUsername`, `txtPassword`, `lnkForgotPassword`, `btnContinue`, `lnkRegister`, `btnBack`, `lblError` |
@@ -472,7 +492,7 @@ Nguyên tắc sắp xếp: có thứ chơi được sớm nhất, và thử đư
 ### Bước 6: PvP Online (đã xong, trừ giao diện bỏ phiếu luật)
 
 - [x] Ghép trận tự động theo điểm, hủy tìm trận.
-- [ ] Hỏi luật chặn 2 đầu trước trận: phần server đã xong (hết 15 giây không trả lời thì chơi luật thường). **Còn chờ TV1 kéo control cho `frmRuleVote`** (`lblQuestion`, `lblCountdown`, `btnAgree`, `btnDecline`), hiện mỗi trận phải chờ 15 giây rồi mới bắt đầu.
+- [x] Hỏi luật chặn 2 đầu trước trận: hỏi bằng MessageBox Có/Không khi vào trận, cần cả 2 người đồng ý mới bật luật; không trả lời trong 15 giây thì chơi luật thường (nhóm chốt bỏ `frmRuleVote`).
 - [x] Nước đi do server xác nhận, đồng hồ chạy trên server.
 - [x] Chat realtime.
 - [x] Undo có xin phép, hạn 15 giây, giới hạn 3 lần bị từ chối.
@@ -503,54 +523,106 @@ Hướng dẫn chi tiết ở mục [Triển khai lên máy host](#triển-khai-
 
 ## Triển khai lên máy host
 
-Làm trên máy của thành viên giữ server (máy sẽ bật suốt buổi demo).
+Bước 7 của roadmap. Làm trên máy của thành viên giữ server; máy này phải bật suốt lúc mọi người chơi Online.
 
-### 1. Cài SQL Server Express và tạo CSDL
+### A. Chuẩn bị (chỉ làm 1 lần)
 
-1. Tải **SQL Server Express** (bản miễn phí) từ trang Microsoft, chọn kiểu cài **Basic**. Cài xong ghi lại tên instance, thường là `SQLEXPRESS`.
-2. Trong `CaroGame.Server/appsettings.Local.json` của máy host, đổi connection string thành:
+**A1. Phần mềm và code**
+
+1. Cài **.NET 10 SDK** và **Git**.
+2. Lấy code về: `git clone https://github.com/khoinguyenk6vn/CaroGame-WinForms.git` (đã có thì `git pull`).
+3. Cài công cụ Migration: `dotnet tool install --global dotnet-ef --version 10.0.13`
+
+**A2. SQL Server Express và CSDL**
+
+1. Tải **SQL Server Express** (miễn phí) từ trang Microsoft, chọn kiểu cài **Basic**. Tên instance thường là `SQLEXPRESS`.
+2. Sao chép `CaroGame.Server/appsettings.Local.example.json` thành `CaroGame.Server/appsettings.Local.json`, sửa dòng `Default`:
    ```json
    "Default": "Server=.\\SQLEXPRESS;Database=CaroGame;Trusted_Connection=True;TrustServerCertificate=True"
    ```
-3. Tạo CSDL:
+3. Tạo CSDL: `dotnet ef database update --project CaroGame.DAL --startup-project CaroGame.Server`
+
+**A3. Gmail gửi mã xác minh**
+
+1. Đăng nhập **đúng** Gmail dùng để gửi mã (nếu trình duyệt mở nhiều tài khoản Google, kiểm tra ảnh đại diện góc phải).
+2. Vào **myaccount.google.com → Bảo mật**, bật **Xác minh 2 bước**.
+3. Vào **myaccount.google.com/apppasswords**, tạo mật khẩu tên `Caro`. Chép 16 chữ cái, **viết liền, bỏ dấu cách**.
+4. Điền vào `appsettings.Local.json`: `"Address": "gmail-cua-nhom@gmail.com"`, `"AppPassword": "16chucaivietlien"`.
+
+**A4. Cloudflare tunnel ra `caro.vernfy.com`**
+
+Điều kiện: tên miền `vernfy.com` đang ở trạng thái **Active** trong trang quản lý Cloudflare của nhóm.
+
+1. Cài: `winget install --id Cloudflare.cloudflared`, đóng và mở lại PowerShell, kiểm tra bằng `cloudflared --version`.
+2. Đăng nhập: `cloudflared tunnel login` (trình duyệt mở ra, chọn `vernfy.com`).
+3. Tạo tunnel: `cloudflared tunnel create caro`
+4. Gắn tên miền: `cloudflared tunnel route dns caro caro.vernfy.com` (nếu báo bản ghi đã có: vào Cloudflare → DNS, xóa bản ghi `caro` cũ rồi chạy lại).
+
+**A5. Không cho máy host ngủ**
+
+Mở PowerShell bằng quyền Administrator: `powercfg /change standby-timeout-ac 0`. Cắm sạc. Laptop thì vào **Control Panel → Power Options → Choose what closing the lid does**, chọn **Do nothing**.
+
+### B. Mỗi lần mở server cho mọi người chơi
+
+1. **Cửa sổ PowerShell 1, chạy server** (để mở suốt):
    ```powershell
-   dotnet ef database update --project CaroGame.DAL --startup-project CaroGame.Server
+   dotnet run --project CaroGame.Server/CaroGame.Server.csproj --launch-profile http
    ```
+2. **Cửa sổ PowerShell 2, chạy tunnel** (để mở suốt):
+   ```powershell
+   cloudflared tunnel run --url http://localhost:5023 caro
+   ```
+3. Mở `https://caro.vernfy.com` trên trình duyệt, thấy chữ "Caro server dang chay" là xong.
 
-### 2. Gmail gửi mã xác minh
+Mở địa chỉ đó bằng trình duyệt **chỉ để kiểm tra** server còn sống. Game là ứng dụng Windows, người chơi phải chạy file `CaroGame.UI.exe` (mục C).
 
-1. Đăng nhập Gmail dùng để gửi mã, vào **Quản lý Tài khoản Google → Bảo mật**, bật **Xác minh 2 bước**.
-2. Trong ô tìm kiếm của trang tài khoản, gõ **Mật khẩu ứng dụng** (App passwords), tạo một mật khẩu tên "Caro". Google hiện 16 ký tự, chép lại (bỏ dấu cách).
-3. Điền vào `appsettings.Local.json` của máy host: `"Address": "gmail-cua-nhom@gmail.com"`, `"AppPassword": "16 ký tự vừa tạo"`.
+### C. Đóng gói game gửi người chơi
 
-### 3. Chạy server
+1. Sửa `CaroGame.UI/clientsettings.json`: `"ServerUrl": "https://caro.vernfy.com"`.
+2. Đóng gói (bản chạy được trên máy không cài .NET):
+   ```powershell
+   dotnet publish CaroGame.UI/CaroGame.UI.csproj -c Release -r win-x64 --self-contained true -o publish\CaroGame
+   ```
+3. Nén thành zip (dùng cách này thay cho Compress-Archive, vì Windows Defender hay khóa file mới tạo):
+   ```powershell
+   Add-Type -AssemblyName System.IO.Compression.FileSystem
+   Remove-Item publish\CaroGame.zip -ErrorAction SilentlyContinue
+   [IO.Compression.ZipFile]::CreateFromDirectory("$PWD\publish\CaroGame", "$PWD\publish\CaroGame.zip")
+   ```
+4. Gửi `publish\CaroGame.zip` cho người chơi. Họ giải nén, chạy `CaroGame.UI.exe`. Nếu Windows hiện "Windows protected your PC" thì bấm **More info → Run anyway** (file chưa được ký số, không phải virus).
 
-```powershell
-dotnet run --project CaroGame.Server/CaroGame.Server.csproj --launch-profile http
-```
+File zip chứa **API key Gemini** trong `clientsettings.json`: chỉ gửi riêng trong nhóm, không đưa lên chỗ công khai. Thư mục `publish` đã nằm trong `.gitignore`.
 
-Mở `http://localhost:5023` trên trình duyệt, thấy chữ "Caro server dang chay" là được. Giữ cửa sổ này mở suốt buổi demo.
+### D. Khi có code mới
 
-### 4. Cloudflare tunnel ra `caro.vernfy.com`
+1. Ở cửa sổ server bấm **Ctrl+C** để tắt server. Tunnel để nguyên.
+2. `git pull`
+3. Nếu có Migration mới: `dotnet ef database update --project CaroGame.DAL --startup-project CaroGame.Server`
+4. Chạy lại server như mục B1.
+5. Nếu code **giao diện hoặc BLL** thay đổi: đóng gói lại như mục C và gửi zip mới cho người chơi. Chỉ sửa phía server thì người chơi không cần tải lại.
 
-Mở một cửa sổ PowerShell khác:
+### E. Thử bằng 2 máy ở 2 mạng khác nhau
 
-1. Cài cloudflared: `winget install --id Cloudflare.cloudflared`
-2. Đăng nhập: `cloudflared tunnel login`. Trình duyệt mở ra, chọn domain `vernfy.com`.
-3. Tạo tunnel (làm 1 lần): `cloudflared tunnel create caro`
-4. Gắn subdomain (làm 1 lần): `cloudflared tunnel route dns caro caro.vernfy.com`
-5. Chạy tunnel (mỗi lần demo): `cloudflared tunnel run --url http://localhost:5023 caro`
-6. Mở `https://caro.vernfy.com` trên trình duyệt, thấy "Caro server dang chay" là tunnel đã thông.
+Ví dụ 1 máy dùng wifi, 1 máy phát 4G từ điện thoại:
 
-### 5. Cấu hình client và thử 2 máy khác mạng
+1. Đăng ký 2 tài khoản khác nhau; mã xác minh phải về Gmail (xem cả thư mục Spam).
+2. Cả 2 bấm PvP Online. Khi vào trận, cả 2 trả lời câu hỏi luật chặn 2 đầu, đánh hết 1 trận; điểm, lịch sử, bảng xếp hạng phải cập nhật.
+3. Thử Undo, chat, đầu hàng, đổi avatar, tắt wifi 1 máy khoảng 10 giây rồi bật lại (trận phải chơi tiếp được).
 
-1. Trên **mọi máy chơi**, sửa `CaroGame.UI/clientsettings.json`: `"ServerUrl": "https://caro.vernfy.com"`, rồi build lại để file được copy sang thư mục chạy.
-2. Lấy 2 máy ở 2 mạng khác nhau (ví dụ 1 máy wifi, 1 máy phát 4G từ điện thoại). Đăng ký 2 tài khoản, cùng bấm PvP Online, đánh hết 1 trận.
-3. Thử thêm: Undo, chat, đầu hàng, tắt wifi 1 máy khoảng 10 giây rồi bật lại (trận phải chơi tiếp được).
+### F. Phương án dự phòng (mạng trường chặn hoặc tunnel lỗi)
 
-### 6. Phương án dự phòng (mạng trường chặn hoặc tunnel lỗi)
+Chạy server và SQL Server ngay trên laptop demo, để `"ServerUrl": "http://localhost:5023"` trong `clientsettings.json`, mở 2 cửa sổ game trên cùng laptop, đăng nhập 2 tài khoản khác nhau để demo Online.
 
-Chạy server và SQL Server ngay trên laptop demo, để `"ServerUrl": "http://localhost:5023"` trong `clientsettings.json`, rồi mở 2 cửa sổ game trên cùng laptop để demo Online.
+### G. Lỗi thường gặp
+
+| Hiện tượng | Cách xử lý |
+|---|---|
+| Game báo "Không kết nối được server." | Kiểm tra 2 cửa sổ server và tunnel còn chạy; mở `https://caro.vernfy.com` trên máy host |
+| Không nhận được mã xác minh | Xem cửa sổ server: dòng `[Loi gui mail]` là sai Gmail/App Password, làm lại mục A3 rồi chạy lại server |
+| "Tài khoản đang đăng nhập ở nơi khác" | Tài khoản đang mở ở máy khác; đóng game ở máy đó hoặc dùng tài khoản khác |
+| Bấm PvP Online chờ mãi | Cần 2 người khác tài khoản cùng bấm PvP Online |
+| Bot chat chỉ nói câu có sẵn | Xem dòng "(Bot đang dùng câu soạn sẵn vì ...)" trong khung chat; thường là thiếu `clientsettings.json` hoặc hết lượt gọi miễn phí |
+| Mọi người rớt mạng giữa chừng | Máy host đã ngủ hoặc tắt cửa sổ server; làm lại mục A5 và B |
 
 ## Câu hỏi bảo vệ
 

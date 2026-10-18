@@ -14,6 +14,11 @@ namespace CaroGame.UI.Forms.Account
         public frmResetPassword(string email, string code)
         {
             InitializeComponent();
+            new FormScaler(this);
+
+            // Phím tắt: Enter = btnConfirm, Esc = btnBack
+            AcceptButton = btnConfirm;
+            CancelButton = btnBack;
             this.email = email;
             this.code = code;
             lblError.Text = "";
