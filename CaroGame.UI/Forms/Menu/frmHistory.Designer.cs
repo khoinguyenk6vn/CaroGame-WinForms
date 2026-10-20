@@ -28,9 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             dgvHistory = new DataGridView();
             btnBack = new Button();
             ((System.ComponentModel.ISupportInitialize)dgvHistory).BeginInit();
+            errorProvider = new ErrorProvider(components);
+            ((System.ComponentModel.ISupportInitialize)errorProvider).BeginInit();
             SuspendLayout();
             // 
             // dgvHistory
@@ -50,6 +53,10 @@
             btnBack.Text = "Back";
             btnBack.UseVisualStyleBackColor = true;
             // 
+            // errorProvider
+            // 
+            errorProvider.ContainerControl = this;
+            // 
             // frmHistory
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -60,6 +67,7 @@
             Name = "frmHistory";
             Text = "frmHistory";
             ((System.ComponentModel.ISupportInitialize)dgvHistory).EndInit();
+            ((System.ComponentModel.ISupportInitialize)errorProvider).EndInit();
             ResumeLayout(false);
         }
 
@@ -67,5 +75,6 @@
 
         private DataGridView dgvHistory;
         private Button btnBack;
+        private ErrorProvider errorProvider;
     }
 }

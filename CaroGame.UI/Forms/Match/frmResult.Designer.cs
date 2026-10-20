@@ -33,6 +33,7 @@
             lblEloChange = new Label();
             btnPlayAgain = new Button();
             btnBackToMenu = new Button();
+            lblReason = new Label();
             SuspendLayout();
             // 
             // lblResultStatus
@@ -82,12 +83,23 @@
             btnBackToMenu.TabIndex = 4;
             btnBackToMenu.Text = "Back To Menu";
             btnBackToMenu.UseVisualStyleBackColor = true;
-            // 
+            //
+            // lblReason
+            //
+            lblReason.AutoSize = true;
+            lblReason.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblReason.Location = new Point(225, 111);
+            lblReason.Name = "lblReason";
+            lblReason.Size = new Size(77, 21);
+            lblReason.TabIndex = 5;
+            lblReason.Text = "lblReason";
+            //
             // frmResult
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(704, 366);
+            Controls.Add(lblReason);
             Controls.Add(btnBackToMenu);
             Controls.Add(btnPlayAgain);
             Controls.Add(lblEloChange);
@@ -106,5 +118,6 @@
         private Label lblEloChange;
         private Button btnPlayAgain;
         private Button btnBackToMenu;
+        private Label lblReason;
     }
 }

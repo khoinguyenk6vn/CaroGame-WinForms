@@ -316,6 +316,7 @@ namespace CaroGame.UI.Forms.Match
         private async void btnUndo_Click(object? sender, EventArgs e)
         {
             pnlGameSettings.Visible = false;
+            errorProvider.Clear();
 
             if (localMatch != null)
             {
@@ -337,7 +338,7 @@ namespace CaroGame.UI.Forms.Match
                 string error = await hub.InvokeAsync<string>("RequestUndo");
                 if (error != "")
                 {
-                    MessageBox.Show(error, "Undo");
+                    ShowUndoError(error);
                 }
             }
             catch (Exception)
@@ -626,6 +627,9 @@ namespace CaroGame.UI.Forms.Match
         {
             undoRequestForm = new frmUndoRequest();
             DialogResult answer = undoRequestForm.ShowDialog(this);
+
+            // Hộp thoại mở bằng ShowDialog không tự giải phóng khi đóng: Dispose để Timer đếm ngược bên trong dừng hẳn
+            undoRequestForm.Dispose();
             undoRequestForm = null;
 
             // Bị đóng vì hết giờ (Cancel) thì server đã tự tính là từ chối, không gửi gì nữa
@@ -657,8 +661,15 @@ namespace CaroGame.UI.Forms.Match
             // Được đồng ý thì bàn cờ đã tự lùi nhờ tin "MoveUndone", chỉ báo khi bị từ chối
             if (!answer.Accepted)
             {
-                MessageBox.Show(answer.Message, "Undo");
+                ShowUndoError(answer.Message);
             }
+        }
+
+        // Lỗi Undo hiện bằng ErrorProvider cạnh nút Settings trong trận (rê chuột vào biểu tượng đỏ để xem lý do).
+        // Không đặt cạnh nút Undo vì nút đó nằm trong pnlGameSettings đang ẩn, biểu tượng sẽ không hiện.
+        private void ShowUndoError(string message)
+        {
+            errorProvider.SetError(btnGameSettings, message);
         }
 
         private void OnChatMessage(ChatDto chat)

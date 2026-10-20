@@ -28,11 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             btnBack = new Button();
             label1 = new Label();
             txtEmail = new TextBox();
             btnSendCode = new Button();
-            lblError = new Label();
+            errorProvider = new ErrorProvider(components);
+            ((System.ComponentModel.ISupportInitialize)errorProvider).BeginInit();
             SuspendLayout();
             // 
             // btnBack
@@ -70,27 +72,22 @@
             btnSendCode.Text = "Gửi mã xác minh";
             btnSendCode.UseVisualStyleBackColor = true;
             // 
-            // lblError
+            // errorProvider
             // 
-            lblError.AutoSize = true;
-            lblError.Location = new Point(780, 160);
-            lblError.Name = "lblError";
-            lblError.Size = new Size(98, 15);
-            lblError.TabIndex = 14;
-            lblError.Text = "Cảnh báo lỗi (ẩn)";
+            errorProvider.ContainerControl = this;
             // 
             // frmForgotPassword
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1008, 537);
-            Controls.Add(lblError);
             Controls.Add(btnSendCode);
             Controls.Add(txtEmail);
             Controls.Add(label1);
             Controls.Add(btnBack);
             Name = "frmForgotPassword";
             Text = "frmForgotPassword";
+            ((System.ComponentModel.ISupportInitialize)errorProvider).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -101,6 +98,6 @@
         private Label label1;
         private TextBox txtEmail;
         private Button btnSendCode;
-        private Label lblError;
+        private ErrorProvider errorProvider;
     }
 }

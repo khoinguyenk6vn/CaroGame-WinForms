@@ -1,6 +1,7 @@
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using CaroGame.BLL.Dtos;
 using CaroGame.BLL.Services;
 
 namespace CaroGame.UI.Services
@@ -41,8 +42,9 @@ namespace CaroGame.UI.Services
             return Image.FromFile(path);
         }
 
-        // Gửi file ảnh lên server kèm session token. Trả về câu thông báo của server.
-        public static async Task<string> UploadAsync(string filePath)
+        // Gửi file ảnh lên server kèm session token.
+        // Trả về kết quả: Success = true nếu server nhận ảnh (mã 200), Message là câu thông báo của server.
+        public static async Task<AccountResult> UploadAsync(string filePath)
         {
             try
             {
@@ -56,11 +58,12 @@ namespace CaroGame.UI.Services
                 request.Content = form;
 
                 HttpResponseMessage response = await httpClient.SendAsync(request);
-                return await response.Content.ReadAsStringAsync();
+                string message = await response.Content.ReadAsStringAsync();
+                return new AccountResult { Success = response.IsSuccessStatusCode, Message = message };
             }
             catch (Exception)
             {
-                return "Không kết nối được server.";
+                return new AccountResult { Success = false, Message = "Không kết nối được server." };
             }
         }
     }

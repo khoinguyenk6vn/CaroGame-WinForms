@@ -39,7 +39,8 @@ namespace CaroGame.UI.Forms.Menu
             }
             catch (Exception)
             {
-                MessageBox.Show("Không kết nối được server.", "Lịch sử đấu");
+                // Hiện biểu tượng đỏ cạnh bảng, rê chuột vào để xem lý do
+                errorProvider.SetError(dgvHistory, "Không kết nối được server.");
             }
         }
 

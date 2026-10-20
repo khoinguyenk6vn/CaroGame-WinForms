@@ -28,14 +28,16 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             label1 = new Label();
             txtUsername = new TextBox();
             txtPassword = new TextBox();
             btnContinue = new Button();
             lnkRegister = new LinkLabel();
             btnBack = new Button();
-            lblError = new Label();
             lnkForgotPassword = new LinkLabel();
+            errorProvider = new ErrorProvider(components);
+            ((System.ComponentModel.ISupportInitialize)errorProvider).BeginInit();
             SuspendLayout();
             // 
             // label1
@@ -94,15 +96,6 @@
             btnBack.Text = "Back";
             btnBack.UseVisualStyleBackColor = true;
             // 
-            // lblError
-            // 
-            lblError.AutoSize = true;
-            lblError.Location = new Point(786, 163);
-            lblError.Name = "lblError";
-            lblError.Size = new Size(98, 15);
-            lblError.TabIndex = 9;
-            lblError.Text = "Cảnh báo lỗi (ẩn)";
-            // 
             // lnkForgotPassword
             // 
             lnkForgotPassword.AutoSize = true;
@@ -115,13 +108,16 @@
             lnkForgotPassword.TabStop = true;
             lnkForgotPassword.Text = "Quên mật khẩu";
             // 
+            // errorProvider
+            // 
+            errorProvider.ContainerControl = this;
+            // 
             // frmLogin
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1008, 537);
             Controls.Add(lnkForgotPassword);
-            Controls.Add(lblError);
             Controls.Add(btnBack);
             Controls.Add(lnkRegister);
             Controls.Add(btnContinue);
@@ -130,6 +126,7 @@
             Controls.Add(label1);
             Name = "frmLogin";
             Text = "frmLogin";
+            ((System.ComponentModel.ISupportInitialize)errorProvider).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -142,7 +139,7 @@
         private Button btnContinue;
         private LinkLabel lnkRegister;
         private Button btnBack;
-        private Label lblError;
         private LinkLabel lnkForgotPassword;
+        private ErrorProvider errorProvider;
     }
 }

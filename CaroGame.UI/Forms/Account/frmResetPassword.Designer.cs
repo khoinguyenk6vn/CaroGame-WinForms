@@ -28,12 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             btnBack = new Button();
             txtNewPassword = new TextBox();
             txtConfirmPassword = new TextBox();
             btnConfirm = new Button();
-            lblError = new Label();
             label1 = new Label();
+            errorProvider = new ErrorProvider(components);
+            ((System.ComponentModel.ISupportInitialize)errorProvider).BeginInit();
             SuspendLayout();
             // 
             // btnBack
@@ -70,15 +72,6 @@
             btnConfirm.Text = "Đổi mật khẩu";
             btnConfirm.UseVisualStyleBackColor = true;
             // 
-            // lblError
-            // 
-            lblError.AutoSize = true;
-            lblError.Location = new Point(779, 160);
-            lblError.Name = "lblError";
-            lblError.Size = new Size(98, 15);
-            lblError.TabIndex = 17;
-            lblError.Text = "Cảnh báo lỗi (ẩn)";
-            // 
             // label1
             // 
             label1.AutoSize = true;
@@ -88,19 +81,23 @@
             label1.TabIndex = 18;
             label1.Text = "Đổi mật khẩu";
             // 
+            // errorProvider
+            // 
+            errorProvider.ContainerControl = this;
+            // 
             // frmResetPassword
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1008, 537);
             Controls.Add(label1);
-            Controls.Add(lblError);
             Controls.Add(btnConfirm);
             Controls.Add(txtConfirmPassword);
             Controls.Add(txtNewPassword);
             Controls.Add(btnBack);
             Name = "frmResetPassword";
             Text = "frmResetPassword";
+            ((System.ComponentModel.ISupportInitialize)errorProvider).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -111,7 +108,7 @@
         private TextBox txtNewPassword;
         private TextBox txtConfirmPassword;
         private Button btnConfirm;
-        private Label lblError;
         private Label label1;
+        private ErrorProvider errorProvider;
     }
 }

@@ -76,7 +76,7 @@ namespace CaroGame.BLL.Online
             return "";
         }
 
-        public void LeaveQueue(string connectionId)
+        public async Task LeaveQueueAsync(string connectionId)
         {
             OnlineUser? onlineUser = SessionStore.FindByConnection(connectionId);
             if (onlineUser == null)
@@ -87,6 +87,16 @@ namespace CaroGame.BLL.Online
             lock (lockObject)
             {
                 queue.RemoveAll(w => w.UserId == onlineUser.UserId);
+            }
+
+            // Người chơi bấm "Dừng tìm" đúng lúc server vừa ghép được trận (tin MatchFound chưa tới máy họ):
+            // hủy trận đó. Trận còn đang hỏi luật nên Surrender sẽ hủy trận, không ai bị trừ điểm,
+            // đối thủ nhận "MatchCanceled" và quay về màn tìm trận.
+            OnlineMatch? match = FindMatchOfUser(onlineUser.UserId);
+            if (match != null && match.Phase == MatchPhase.VotingRule)
+            {
+                match.Surrender(onlineUser.UserId);
+                await AfterActionAsync(match);
             }
         }
 

@@ -74,7 +74,7 @@ namespace CaroGame.UI.Forms.Menu
                 }
                 catch (Exception)
                 {
-                    lblRank.Text = "Không kết nối được server.";
+                    errorProvider.SetError(lblRank, "Không kết nối được server.");
                 }
             }
 
@@ -94,9 +94,18 @@ namespace CaroGame.UI.Forms.Menu
                 return;
             }
 
+            errorProvider.Clear();
+
             // Kiểm tra đuôi file và dung lượng tối đa 1MB do server (tầng BLL) làm
-            string message = await AvatarLoader.UploadAsync(dialog.FileName);
-            MessageBox.Show(message, "Đổi avatar");
+            AccountResult result = await AvatarLoader.UploadAsync(dialog.FileName);
+            if (!result.Success)
+            {
+                // Lỗi: hiện biểu tượng đỏ cạnh nút đổi avatar, rê chuột vào để xem lý do
+                errorProvider.SetError(btnChangeAvatar, result.Message);
+                return;
+            }
+
+            MessageBox.Show(result.Message, "Đổi avatar");
             await ShowProfileAsync();
         }
 

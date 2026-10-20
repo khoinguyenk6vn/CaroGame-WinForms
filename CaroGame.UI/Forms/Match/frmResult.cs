@@ -23,9 +23,7 @@ namespace CaroGame.UI.Forms.Match
 
             lblResultStatus.Text = resultText;
             lblGameMode.Text = "Chế độ: " + modeText;
-
-            // Tạm hiện lý do kết thúc trên thanh tiêu đề, khi nhóm thêm lblReason thì chuyển sang đó
-            Text = "Lý do: " + reasonText;
+            lblReason.Text = "Lý do: " + reasonText;
 
             lblEloChange.Visible = scoreText != "";
             lblEloChange.Text = scoreText;
