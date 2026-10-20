@@ -30,6 +30,7 @@
         {
             components = new System.ComponentModel.Container();
             dgvLeaderboard = new DataGridView();
+            colRankIcon = new DataGridViewImageColumn();
             btnBack = new Button();
             ((System.ComponentModel.ISupportInitialize)dgvLeaderboard).BeginInit();
             errorProvider = new ErrorProvider(components);
@@ -39,18 +40,27 @@
             // dgvLeaderboard
             // 
             dgvLeaderboard.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvLeaderboard.Location = new Point(0, 0);
+            dgvLeaderboard.Columns.AddRange(new DataGridViewColumn[] { colRankIcon });
+            dgvLeaderboard.Location = new Point(12, 41);
             dgvLeaderboard.Name = "dgvLeaderboard";
-            dgvLeaderboard.Size = new Size(800, 368);
+            dgvLeaderboard.RowTemplate.Height = 40;
+            dgvLeaderboard.Size = new Size(694, 484);
             dgvLeaderboard.TabIndex = 0;
+            //
+            // colRankIcon
+            //
+            colRankIcon.HeaderText = "Logo";
+            colRankIcon.ImageLayout = DataGridViewImageCellLayout.Zoom;
+            colRankIcon.Name = "colRankIcon";
+            colRankIcon.Width = 50;
             // 
             // btnBack
             // 
-            btnBack.Location = new Point(0, 383);
+            btnBack.Location = new Point(12, 12);
             btnBack.Name = "btnBack";
-            btnBack.Size = new Size(166, 65);
+            btnBack.Size = new Size(75, 23);
             btnBack.TabIndex = 1;
-            btnBack.Text = "GO BACK BỜ RÔ";
+            btnBack.Text = "Back";
             btnBack.UseVisualStyleBackColor = true;
             // 
             // errorProvider
@@ -74,6 +84,7 @@
         #endregion
 
         private DataGridView dgvLeaderboard;
+        private DataGridViewImageColumn colRankIcon;
         private Button btnBack;
         private ErrorProvider errorProvider;
     }

@@ -169,7 +169,7 @@ dotnet run --project CaroGame.Server/CaroGame.Server.csproj
 
 ### Profile
 
-- Hiện avatar, tên, điểm và bậc rank.
+- Hiện avatar, tên, điểm, bậc rank và **logo rank** (`picRank`).
 - Nút **Lịch sử đấu**, nút **Đăng xuất**.
 - **Avatar:**
   - Mặc định là 1 trong khoảng 20 ảnh PNG lấy từ DiceBear (style giấy phép CC0), đóng gói sẵn trong client. Lúc đăng ký server chọn ngẫu nhiên 1 ảnh và lưu số thứ tự vào DB, nên avatar cố định theo user. Guest thì ngẫu nhiên mỗi lần mở app.
@@ -185,6 +185,7 @@ dotnet run --project CaroGame.Server/CaroGame.Server.csproj
 ### Bảng xếp hạng
 
 - Hiện top 50. Dòng cuối luôn là thứ hạng của chính mình.
+- Cột đầu tiên "Logo" hiện logo rank của từng người.
 - Bằng điểm thì xếp theo số trận thắng Online nhiều hơn, rồi tới username theo thứ tự chữ cái.
 
 ### Màn trận đấu
@@ -192,6 +193,7 @@ dotnet run --project CaroGame.Server/CaroGame.Server.csproj
 - **Bên trái:** bàn cờ 20x20.
 - **Góc trên trái:** nút Settings trong trận, gồm Undo và FF (đầu hàng).
 - **Bên phải, từ trên xuống:** 2 thẻ người chơi (avatar, tên, đồng hồ đếm ngược), rồi chat box (danh sách tin nhắn và ô nhập).
+- **Avatar trên thẻ người chơi:** người chơi thật hiện avatar theo Profile (ảnh đã upload, chưa upload thì ảnh mặc định của tài khoản; Guest là ảnh mặc định ngẫu nhiên lúc mở app). Bot (PvE) và Người chơi 2 (Offline) dùng 1 ảnh mặc định ngẫu nhiên. Trận Online hiện thêm logo rank của cả 2 người dưới đồng hồ.
 - **Hết trận:** hộp thoại kết quả hiện Thắng/Thua/Hòa, lý do kết thúc, điểm thay đổi (chỉ Online), cùng các nút "Chơi lại" (PvE/Offline) hoặc "Tìm trận mới" (Online), và "Về menu".
 
 ### Chat trong trận
@@ -525,6 +527,7 @@ Hướng dẫn chi tiết ở mục [Triển khai lên máy host](#triển-khai-
 - [x] ErrorProvider (`errorProvider`) thay MessageBox/`lblError` báo lỗi ở `frmLogin`, `frmRegister`, `frmVerifyCode`, `frmForgotPassword`, `frmResetPassword` (ô trống báo cạnh ô, lỗi server báo cạnh nút), `frmProfile` (đổi avatar lỗi), `frmHistory`, `frmLeaderboard` (không tải được), `frmGame` (Undo bị từ chối, cạnh nút Settings trong trận). Rê chuột vào biểu tượng đỏ để xem lý do. Giữ MessageBox cho thông báo thành công, hỏi luật Yes/No, trận bị hủy.
 - [x] `lblReason` (`frmResult`) hiện lý do kết thúc; `lblCountdown` + `tmrCountdown` (`frmUndoRequest`) đếm ngược 15 giây.
 - [x] Sửa lỗi bấm "Dừng tìm" đúng lúc server vừa ghép trận: server hủy trận đó, không ai bị trừ điểm, đối thủ quay về màn tìm trận.
+- [x] Avatar đúng của từng người trong màn trận (trước đây luôn hiện ảnh tạm). Logo rank (Valorant) ở Profile, Bảng xếp hạng và thẻ người chơi trận Online.
 
 ## Triển khai lên máy host
 
@@ -667,6 +670,12 @@ Chạy server và SQL Server ngay trên laptop demo, để `"ServerUrl": "http:/
 - Không dùng Generic Repository, Unit of Work tự viết, CQRS/MediatR, AutoMapper hay nhiều tầng abstraction. Các class Service dùng thẳng `AppDbContext`.
 - Logic game (kiểm tra thắng, chặn 2 đầu, đồng hồ, bot, tính điểm) tách ra class riêng. Form chỉ nhận sự kiện và hiển thị.
 - Sự kiện từ SignalR chạy trên luồng khác với luồng giao diện, nên mọi cập nhật giao diện phải đi qua `Invoke`.
+
+### Bản quyền hình ảnh
+
+- **Logo rank** (`CaroGame.UI/Ranks/rank_1.png` ... `rank_27.png`): logo rank của game VALORANT, tải từ valorant-api.com. 9 hạng của game khớp 9 hạng Valorant: Sắt = Iron, Đồng = Bronze, Bạc = Silver, Vàng = Gold, Bạch Kim = Platinum, Kim Cương = Diamond, Lục Bảo = Ascendant, Trái Đất = Immortal, Mặt Trời = Radiant (Mặt Trời I/II/III dùng chung logo Radiant).
+- Riot Games cho phép dự án phi thương mại dùng tài sản của họ kèm ghi chú sau (đã ghi trong form Hướng dẫn): *CaroGame isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing Riot Games properties. Riot Games, and all associated properties are trademarks or registered trademarks of Riot Games, Inc.* Không dùng đồ án này vào mục đích thương mại.
+- **Avatar mặc định:** DiceBear style Thumbs (CC0).
 
 ### Bí mật
 

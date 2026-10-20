@@ -50,8 +50,25 @@ namespace CaroGame.BLL.Online
             PlayerO.Stone = Stone.O;
 
             // Báo cho 2 người là đã ghép được trận, kèm quân của mỗi người
-            AddMessage(PlayerX, "MatchFound", new MatchFoundDto { XName = PlayerX.Username, OName = PlayerO.Username, MyStone = Stone.X });
-            AddMessage(PlayerO, "MatchFound", new MatchFoundDto { XName = PlayerX.Username, OName = PlayerO.Username, MyStone = Stone.O });
+            AddMessage(PlayerX, "MatchFound", CreateMatchFound(Stone.X));
+            AddMessage(PlayerO, "MatchFound", CreateMatchFound(Stone.O));
+        }
+
+        // Thông tin trận gửi cho 1 người: tên, điểm, avatar của cả 2, và quân của người nhận
+        private MatchFoundDto CreateMatchFound(Stone myStone)
+        {
+            return new MatchFoundDto
+            {
+                XName = PlayerX.Username,
+                OName = PlayerO.Username,
+                MyStone = myStone,
+                XScore = PlayerX.Score,
+                OScore = PlayerO.Score,
+                XDefaultAvatarIndex = PlayerX.DefaultAvatarIndex,
+                XAvatarPath = PlayerX.AvatarPath,
+                ODefaultAvatarIndex = PlayerO.DefaultAvatarIndex,
+                OAvatarPath = PlayerO.AvatarPath
+            };
         }
 
         public bool HasPlayer(int userId)

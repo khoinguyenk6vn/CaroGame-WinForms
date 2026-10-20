@@ -43,6 +43,8 @@
             lblPlayer2Timer = new Label();
             lblPlayer2Name = new Label();
             picPlayer2Avatar = new PictureBox();
+            picPlayer1Rank = new PictureBox();
+            picPlayer2Rank = new PictureBox();
             pnlChatBox = new Panel();
             btnSendChat = new Button();
             txtChatInput = new TextBox();
@@ -56,6 +58,8 @@
             pnlPlayer1.SuspendLayout();
             pnlPlayer2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)picPlayer2Avatar).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)picPlayer1Rank).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)picPlayer2Rank).BeginInit();
             pnlChatBox.SuspendLayout();
             errorProvider = new ErrorProvider(components);
             ((System.ComponentModel.ISupportInitialize)errorProvider).BeginInit();
@@ -128,6 +132,7 @@
             // 
             // pnlPlayer1
             // 
+            pnlPlayer1.Controls.Add(picPlayer1Rank);
             pnlPlayer1.Controls.Add(lblPlayer1Timer);
             pnlPlayer1.Controls.Add(lblPlayer1Name);
             pnlPlayer1.Controls.Add(picPlayer1Avatar);
@@ -154,6 +159,7 @@
             // 
             // pnlPlayer2
             // 
+            pnlPlayer2.Controls.Add(picPlayer2Rank);
             pnlPlayer2.Controls.Add(lblPlayer2Timer);
             pnlPlayer2.Controls.Add(lblPlayer2Name);
             pnlPlayer2.Controls.Add(picPlayer2Avatar);
@@ -187,7 +193,25 @@
             picPlayer2Avatar.SizeMode = PictureBoxSizeMode.StretchImage;
             picPlayer2Avatar.TabIndex = 6;
             picPlayer2Avatar.TabStop = false;
-            // 
+            //
+            // picPlayer1Rank
+            //
+            picPlayer1Rank.Location = new Point(111, 65);
+            picPlayer1Rank.Name = "picPlayer1Rank";
+            picPlayer1Rank.Size = new Size(40, 40);
+            picPlayer1Rank.SizeMode = PictureBoxSizeMode.Zoom;
+            picPlayer1Rank.TabIndex = 7;
+            picPlayer1Rank.TabStop = false;
+            //
+            // picPlayer2Rank
+            //
+            picPlayer2Rank.Location = new Point(111, 65);
+            picPlayer2Rank.Name = "picPlayer2Rank";
+            picPlayer2Rank.Size = new Size(40, 40);
+            picPlayer2Rank.SizeMode = PictureBoxSizeMode.Zoom;
+            picPlayer2Rank.TabIndex = 8;
+            picPlayer2Rank.TabStop = false;
+            //
             // pnlChatBox
             // 
             pnlChatBox.Controls.Add(btnSendChat);
@@ -275,6 +299,8 @@
             pnlPlayer1.ResumeLayout(false);
             pnlPlayer2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)picPlayer2Avatar).EndInit();
+            ((System.ComponentModel.ISupportInitialize)picPlayer1Rank).EndInit();
+            ((System.ComponentModel.ISupportInitialize)picPlayer2Rank).EndInit();
             pnlChatBox.ResumeLayout(false);
             pnlChatBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)errorProvider).EndInit();
@@ -298,6 +324,8 @@
         private Label lblPlayer2Timer;
         private Label lblPlayer2Name;
         private PictureBox picPlayer2Avatar;
+        private PictureBox picPlayer1Rank;
+        private PictureBox picPlayer2Rank;
         private System.Windows.Forms.Timer Player2Timer;
         private Label lblTurn;
         private Label lblRule;

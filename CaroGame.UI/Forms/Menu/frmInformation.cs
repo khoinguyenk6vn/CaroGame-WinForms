@@ -43,7 +43,12 @@ namespace CaroGame.UI.Forms.Menu
             "- Điểm bắt đầu là 1000 và không bao giờ dưới 1000.\n" +
             "- Thắng nhanh được nhiều điểm hơn, đầu hàng hoặc mất kết nối quá 30 giây bị trừ 100 điểm.\n" +
             "- 9 hạng từ thấp lên cao: Sắt, Đồng, Bạc, Vàng, Bạch Kim, Kim Cương, Lục Bảo, Trái Đất, Mặt Trời. " +
-            "Mỗi hạng có 3 bậc I, II, III.";
+            "Mỗi hạng có 3 bậc I, II, III.\n\n" +
+            "BẢN QUYỀN HÌNH ẢNH\n\n" +
+            "- Logo rank lấy từ game VALORANT của Riot Games. Game Caro này không được Riot Games xác nhận " +
+            "và không thể hiện quan điểm của Riot Games. Riot Games và các tài sản liên quan là nhãn hiệu " +
+            "của Riot Games, Inc.\n" +
+            "- Avatar mặc định: bộ ảnh DiceBear (style Thumbs).";
 
         private void btnClose_Click(object? sender, EventArgs e)
         {

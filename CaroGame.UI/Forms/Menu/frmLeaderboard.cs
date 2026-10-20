@@ -36,11 +36,26 @@ namespace CaroGame.UI.Forms.Menu
 
                 // DataGridView tự tạo cột theo các thuộc tính của LeaderboardRowDto (tên cột lấy từ DisplayName)
                 leaderboardSource.DataSource = rows;
+                ShowRankIcons();
             }
             catch (Exception)
             {
                 // Hiện biểu tượng đỏ cạnh bảng, rê chuột vào để xem lý do
                 errorProvider.SetError(dgvLeaderboard, "Không kết nối được server.");
+            }
+        }
+
+        // Cột "Logo" (colRankIcon, tạo trong Designer) không lấy từ DTO vì DTO không chứa ảnh:
+        // đi qua từng dòng, lấy điểm của dòng đó rồi gán ảnh logo rank vào ô
+        private void ShowRankIcons()
+        {
+            foreach (DataGridViewRow row in dgvLeaderboard.Rows)
+            {
+                LeaderboardRowDto? item = row.DataBoundItem as LeaderboardRowDto;
+                if (item != null)
+                {
+                    row.Cells["colRankIcon"].Value = RankIconLoader.Load(item.Score);
+                }
             }
         }
 

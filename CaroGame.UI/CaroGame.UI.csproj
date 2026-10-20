@@ -5,6 +5,8 @@
     <None Update="clientsettings.json" CopyToOutputDirectory="PreserveNewest" />
     <!-- 20 ảnh avatar mặc định (DiceBear, style Thumbs) -->
     <None Update="Avatars\*.png" CopyToOutputDirectory="PreserveNewest" />
+    <!-- 27 ảnh logo rank (logo Valorant của Riot Games): rank_1.png (Sắt I) ... rank_27.png (Mặt Trời III) -->
+    <None Update="Ranks\*.png" CopyToOutputDirectory="PreserveNewest" />
     <!-- Âm thanh: move.mp3 (đánh quân), music.mp3 (nhạc nền). Thiếu file vẫn chạy bình thường. -->
     <None Update="Sounds\*.mp3" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>

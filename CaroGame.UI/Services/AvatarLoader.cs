@@ -9,17 +9,27 @@ namespace CaroGame.UI.Services
     // Lấy ảnh avatar để hiện lên PictureBox, và upload ảnh avatar mới lên server
     public static class AvatarLoader
     {
-        private static readonly HttpClient httpClient = new HttpClient();
+        private const int DefaultAvatarCount = 20;
 
-        // Ảnh của người đang chơi: đã upload thì tải từ server, chưa thì dùng ảnh mặc định.
-        // Trả về null nếu không có ảnh nào (khi đó giữ nguyên ảnh đang hiện).
+        private static readonly HttpClient httpClient = new HttpClient();
+        private static readonly Random random = new Random();
+
+        // Ảnh của người đang chơi trên máy này (lấy từ Session)
         public static async Task<Image?> LoadForCurrentPlayerAsync()
         {
-            if (Session.AvatarPath != "")
+            return await LoadAsync(Session.DefaultAvatarIndex, Session.AvatarPath);
+        }
+
+        // Ảnh của 1 người chơi bất kỳ (ví dụ đối thủ Online):
+        // đã upload (avatarPath khác rỗng) thì tải từ server, chưa thì dùng ảnh mặc định số defaultIndex.
+        // Trả về null nếu không có ảnh nào (khi đó giữ nguyên ảnh đang hiện).
+        public static async Task<Image?> LoadAsync(int defaultIndex, string avatarPath)
+        {
+            if (avatarPath != "")
             {
                 try
                 {
-                    byte[] bytes = await httpClient.GetByteArrayAsync(ServerConnection.ServerUrl + "/" + Session.AvatarPath);
+                    byte[] bytes = await httpClient.GetByteArrayAsync(ServerConnection.ServerUrl + "/" + avatarPath);
                     return Image.FromStream(new MemoryStream(bytes));
                 }
                 catch (Exception)
@@ -28,7 +38,13 @@ namespace CaroGame.UI.Services
                 }
             }
 
-            return LoadDefault(Session.DefaultAvatarIndex);
+            return LoadDefault(defaultIndex);
+        }
+
+        // 1 ảnh mặc định ngẫu nhiên (dùng cho Bot và Người chơi 2 ở chế độ Offline)
+        public static Image? LoadRandomDefault()
+        {
+            return LoadDefault(random.Next(DefaultAvatarCount));
         }
 
         // 20 ảnh mặc định nằm trong thư mục Avatars cạnh file .exe (avatar_0.png ... avatar_19.png)

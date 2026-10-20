@@ -53,6 +53,7 @@ namespace CaroGame.UI.Forms.Menu
             lblTitle2.Visible = loggedIn;
             lblScore.Visible = loggedIn;
             lblRank.Visible = loggedIn;
+            picRank.Visible = loggedIn;
             btnChangeAvatar.Visible = loggedIn;
             btnHistory.Visible = loggedIn;
             btnLogout.Visible = loggedIn;
@@ -70,6 +71,9 @@ namespace CaroGame.UI.Forms.Menu
                     {
                         Session.UpdateProfile(profile);
                         profileSource.DataSource = profile;
+
+                        // Logo rank theo điểm hiện tại
+                        picRank.Image = RankIconLoader.Load(profile.Score);
                     }
                 }
                 catch (Exception)
