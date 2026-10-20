@@ -28,9 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             lblMessage = new Label();
             btnAccept = new Button();
             btnDecline = new Button();
+            lblCountdown = new Label();
+            tmrCountdown = new System.Windows.Forms.Timer(components);
             SuspendLayout();
             // 
             // lblMessage
@@ -64,13 +67,28 @@
             btnDecline.TabIndex = 2;
             btnDecline.Text = "Từ Chối";
             btnDecline.UseVisualStyleBackColor = true;
-            // 
+            //
+            // lblCountdown
+            //
+            lblCountdown.AutoSize = true;
+            lblCountdown.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblCountdown.Location = new Point(97, 140);
+            lblCountdown.Name = "lblCountdown";
+            lblCountdown.Size = new Size(105, 21);
+            lblCountdown.TabIndex = 3;
+            lblCountdown.Text = "lblCountdown";
+            //
+            // tmrCountdown
+            //
+            tmrCountdown.Interval = 1000;
+            //
             // frmUndoRequest
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
             ClientSize = new Size(704, 366);
+            Controls.Add(lblCountdown);
             Controls.Add(btnDecline);
             Controls.Add(btnAccept);
             Controls.Add(lblMessage);
@@ -85,5 +103,7 @@
         private Label lblMessage;
         private Button btnAccept;
         private Button btnDecline;
+        private Label lblCountdown;
+        private System.Windows.Forms.Timer tmrCountdown;
     }
 }

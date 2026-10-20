@@ -16,6 +16,8 @@ namespace CaroGame.DAL.DataAccess
 
         public async Task AddAsync(MatchHistory history)
         {
+            EntityValidator.Validate(history);
+
             using AppDbContext db = dbFactory.CreateDbContext();
             db.MatchHistories.Add(history);
             await db.SaveChangesAsync();

@@ -34,16 +34,16 @@
             // 
             // rtbGuide
             // 
-            rtbGuide.Location = new Point(2, 12);
+            rtbGuide.Location = new Point(12, 41);
             rtbGuide.Name = "rtbGuide";
             rtbGuide.ReadOnly = true;
-            rtbGuide.Size = new Size(801, 438);
+            rtbGuide.Size = new Size(984, 484);
             rtbGuide.TabIndex = 0;
             rtbGuide.Text = "";
             // 
             // btnClose
             // 
-            btnClose.Location = new Point(331, 337);
+            btnClose.Location = new Point(12, 12);
             btnClose.Name = "btnClose";
             btnClose.Size = new Size(75, 23);
             btnClose.TabIndex = 1;
@@ -54,7 +54,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(1008, 537);
             Controls.Add(btnClose);
             Controls.Add(rtbGuide);
             Name = "frmInformation";

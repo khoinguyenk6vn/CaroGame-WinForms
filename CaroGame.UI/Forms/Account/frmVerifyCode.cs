@@ -7,6 +7,7 @@ namespace CaroGame.UI.Forms.Account
 {
     // Nhập mã 6 số gửi qua email. Dùng chung cho đăng ký và quên mật khẩu.
     // Trả về DialogResult.OK nếu mã đúng.
+    // Lỗi hiện bằng ErrorProvider: biểu tượng đỏ cạnh ô/nút bị lỗi, rê chuột vào biểu tượng để xem lý do.
     public partial class frmVerifyCode : Form
     {
         private readonly string email;
@@ -28,7 +29,6 @@ namespace CaroGame.UI.Forms.Account
 
             lblMessage.Text = "Mã xác minh đã được gửi tới " + email;
             lblResendCountdown.Text = "";
-            lblError.Text = "";
 
             // Gắn các sự kiện chưa được gắn trong Designer
             btnConfirm.Click += btnConfirm_Click;
@@ -38,8 +38,15 @@ namespace CaroGame.UI.Forms.Account
 
         private async void btnConfirm_Click(object? sender, EventArgs e)
         {
-            lblError.Text = "";
+            // Xóa các lỗi của lần bấm trước
+            errorProvider.Clear();
+
             string code = txtCode.Text.Trim();
+            if (code == "")
+            {
+                errorProvider.SetError(txtCode, "Chưa nhập mã.");
+                return;
+            }
 
             // Đăng ký: xác minh email. Quên mật khẩu: chỉ kiểm tra mã đúng chưa.
             string methodName = purpose == CodePurpose.Register ? "VerifyEmail" : "CheckResetCode";
@@ -52,13 +59,14 @@ namespace CaroGame.UI.Forms.Account
             }
             catch (Exception)
             {
-                lblError.Text = "Không kết nối được server.";
+                errorProvider.SetError(btnConfirm, "Không kết nối được server.");
                 return;
             }
 
+            // Mã sai, hết hạn, bị hủy... đều là lỗi của ô nhập mã
             if (!result.Success)
             {
-                lblError.Text = result.Message;
+                errorProvider.SetError(txtCode, result.Message);
                 return;
             }
 
@@ -69,6 +77,9 @@ namespace CaroGame.UI.Forms.Account
         // Server kiểm tra luật chờ 60 giây giữa 2 lần gửi và trả về thông báo
         private async void btnResend_Click(object? sender, EventArgs e)
         {
+            errorProvider.Clear();
+            lblResendCountdown.Text = "";
+
             AccountResult result;
             try
             {
@@ -77,11 +88,19 @@ namespace CaroGame.UI.Forms.Account
             }
             catch (Exception)
             {
-                lblError.Text = "Không kết nối được server.";
+                errorProvider.SetError(btnResend, "Không kết nối được server.");
                 return;
             }
 
-            lblResendCountdown.Text = result.Message;
+            // Gửi được thì hiện thông báo, không gửi được (ví dụ chưa đủ 60 giây) thì báo lỗi cạnh nút
+            if (result.Success)
+            {
+                lblResendCountdown.Text = result.Message;
+            }
+            else
+            {
+                errorProvider.SetError(btnResend, result.Message);
+            }
         }
 
         private void btnBack_Click(object? sender, EventArgs e)

@@ -13,10 +13,20 @@ namespace CaroGame.UI.Forms.Menu
         // true nếu người chơi bấm Đăng xuất
         public bool LoggedOut { get; private set; }
 
+        // Thông tin Profile lấy từ server. lblScore, lblRank gắn với BindingSource này (DataBindings),
+        // nên mỗi lần gán ProfileDto mới vào DataSource thì 2 label tự hiện điểm và bậc rank mới.
+        private readonly BindingSource profileSource = new BindingSource();
+
         public frmProfile()
         {
             InitializeComponent();
             new FormScaler(this);
+
+            // Chưa có dữ liệu thì cho BindingSource biết kiểu dữ liệu (ProfileDto) để gắn được tên thuộc tính.
+            // "Text" là thuộc tính của Label, "Score"/"RankName" là thuộc tính của ProfileDto.
+            profileSource.DataSource = typeof(ProfileDto);
+            lblScore.DataBindings.Add("Text", profileSource, "Score");
+            lblRank.DataBindings.Add("Text", profileSource, "RankName");
 
             // Phím tắt: Esc = btnBack
             CancelButton = btnBack;
@@ -59,13 +69,12 @@ namespace CaroGame.UI.Forms.Menu
                     if (profile != null)
                     {
                         Session.UpdateProfile(profile);
-                        lblScore.Text = profile.Score.ToString();
-                        lblRank.Text = profile.RankName;
+                        profileSource.DataSource = profile;
                     }
                 }
                 catch (Exception)
                 {
-                    lblRank.Text = "Không kết nối được server.";
+                    errorProvider.SetError(lblRank, "Không kết nối được server.");
                 }
             }
 
@@ -85,9 +94,18 @@ namespace CaroGame.UI.Forms.Menu
                 return;
             }
 
+            errorProvider.Clear();
+
             // Kiểm tra đuôi file và dung lượng tối đa 1MB do server (tầng BLL) làm
-            string message = await AvatarLoader.UploadAsync(dialog.FileName);
-            MessageBox.Show(message, "Đổi avatar");
+            AccountResult result = await AvatarLoader.UploadAsync(dialog.FileName);
+            if (!result.Success)
+            {
+                // Lỗi: hiện biểu tượng đỏ cạnh nút đổi avatar, rê chuột vào để xem lý do
+                errorProvider.SetError(btnChangeAvatar, result.Message);
+                return;
+            }
+
+            MessageBox.Show(result.Message, "Đổi avatar");
             await ShowProfileAsync();
         }
 

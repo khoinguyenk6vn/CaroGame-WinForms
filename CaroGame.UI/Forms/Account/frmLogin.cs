@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.SignalR.Client;
 namespace CaroGame.UI.Forms.Account
 {
     // Đăng nhập. Trả về DialogResult.OK nếu đăng nhập thành công.
+    // Lỗi hiện bằng ErrorProvider: biểu tượng đỏ cạnh ô/nút bị lỗi, rê chuột vào biểu tượng để xem lý do.
     public partial class frmLogin : Form
     {
         public frmLogin()
@@ -16,7 +17,6 @@ namespace CaroGame.UI.Forms.Account
             // Phím tắt: Enter = btnContinue, Esc = btnBack
             AcceptButton = btnContinue;
             CancelButton = btnBack;
-            lblError.Text = "";
 
             // Gắn các sự kiện chưa được gắn trong Designer
             btnContinue.Click += btnContinue_Click;
@@ -27,7 +27,25 @@ namespace CaroGame.UI.Forms.Account
 
         private async void btnContinue_Click(object? sender, EventArgs e)
         {
-            lblError.Text = "";
+            // Xóa các lỗi của lần bấm trước
+            errorProvider.Clear();
+
+            // Ô nào để trống thì báo lỗi cạnh ô đó, chưa gửi lên server
+            bool hasEmpty = false;
+            if (txtUsername.Text.Trim() == "")
+            {
+                errorProvider.SetError(txtUsername, "Chưa nhập username.");
+                hasEmpty = true;
+            }
+            if (txtPassword.Text == "")
+            {
+                errorProvider.SetError(txtPassword, "Chưa nhập mật khẩu.");
+                hasEmpty = true;
+            }
+            if (hasEmpty)
+            {
+                return;
+            }
 
             LoginResult result;
             try
@@ -37,7 +55,7 @@ namespace CaroGame.UI.Forms.Account
             }
             catch (Exception)
             {
-                lblError.Text = "Không kết nối được server.";
+                errorProvider.SetError(btnContinue, "Không kết nối được server.");
                 return;
             }
 
@@ -47,14 +65,14 @@ namespace CaroGame.UI.Forms.Account
                 frmVerifyCode verifyForm = new frmVerifyCode(result.Email, CodePurpose.Register);
                 if (verifyForm.ShowDialog(this) == DialogResult.OK)
                 {
-                    lblError.Text = "Xác minh thành công, hãy bấm Tiếp tục để đăng nhập.";
+                    MessageBox.Show("Xác minh thành công, hãy bấm Tiếp tục để đăng nhập.", "Đăng nhập");
                 }
                 return;
             }
 
             if (!result.Success)
             {
-                lblError.Text = result.Message;
+                errorProvider.SetError(btnContinue, result.Message);
                 return;
             }
 

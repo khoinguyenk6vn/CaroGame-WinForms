@@ -7,6 +7,9 @@ namespace CaroGame.UI.Forms.Menu
     // Lịch sử đấu: trận Online có điểm cộng/trừ, PvE/Offline chỉ hiện chế độ
     public partial class frmHistory : Form
     {
+        // DataGridView lấy dữ liệu qua BindingSource: đổi DataSource của BindingSource là bảng tự hiện lại
+        private readonly BindingSource historySource = new BindingSource();
+
         public frmHistory()
         {
             InitializeComponent();
@@ -18,6 +21,10 @@ namespace CaroGame.UI.Forms.Menu
             // Gắn các sự kiện chưa được gắn trong Designer
             btnBack.Click += btnBack_Click;
             Load += frmHistory_Load;
+
+            // Bảng chỉ để xem, không cho thêm dòng
+            dgvHistory.AllowUserToAddRows = false;
+            dgvHistory.DataSource = historySource;
         }
 
         private async void frmHistory_Load(object? sender, EventArgs e)
@@ -28,12 +35,12 @@ namespace CaroGame.UI.Forms.Menu
                 List<HistoryItemDto> items = await hub.InvokeAsync<List<HistoryItemDto>>("GetHistory");
 
                 // DataGridView tự tạo cột theo các thuộc tính của HistoryItemDto (tên cột lấy từ DisplayName)
-                dgvHistory.AllowUserToAddRows = false;
-                dgvHistory.DataSource = items;
+                historySource.DataSource = items;
             }
             catch (Exception)
             {
-                MessageBox.Show("Không kết nối được server.", "Lịch sử đấu");
+                // Hiện biểu tượng đỏ cạnh bảng, rê chuột vào để xem lý do
+                errorProvider.SetError(dgvHistory, "Không kết nối được server.");
             }
         }
 

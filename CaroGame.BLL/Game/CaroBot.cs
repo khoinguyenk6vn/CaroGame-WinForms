@@ -10,30 +10,32 @@ namespace CaroGame.BLL.Game
         // PvE luôn áp dụng luật chặn 2 đầu
         private const bool BlockBothEndsRule = true;
 
-        public (int Row, int Col) ChooseMove(Board board, Stone botStone)
+        // Trả về nước đi bot chọn (ô nào, quân của bot)
+        public Move ChooseMove(Board board, Stone botStone)
         {
             Stone playerStone = GameRules.Opponent(botStone);
 
             // 1. Có ô đánh vào là thắng ngay thì đánh luôn
-            var winningCell = FindWinningCell(board, botStone);
-            if (winningCell != null)
+            Move? winningMove = FindWinningMove(board, botStone);
+            if (winningMove != null)
             {
-                return winningCell.Value;
+                return new Move(winningMove.Row, winningMove.Col, botStone);
             }
 
             // 2. Người chơi đánh vào ô nào là thắng thì chặn ô đó
-            var blockingCell = FindWinningCell(board, playerStone);
-            if (blockingCell != null)
+            Move? blockingMove = FindWinningMove(board, playerStone);
+            if (blockingMove != null)
             {
-                return blockingCell.Value;
+                return new Move(blockingMove.Row, blockingMove.Col, botStone);
             }
 
             // 3. Còn lại: chọn ô có điểm cao nhất
-            return FindBestScoredCell(board, botStone, playerStone);
+            return FindBestScoredMove(board, botStone, playerStone);
         }
 
-        // Thử đặt quân vào từng ô trống, kiểm tra thắng bằng đúng luật của game, rồi gỡ quân ra
-        private (int Row, int Col)? FindWinningCell(Board board, Stone stone)
+        // Thử đặt quân vào từng ô trống, kiểm tra thắng bằng đúng luật của game, rồi gỡ quân ra.
+        // Trả về null nếu không có ô nào đánh vào là thắng.
+        private Move? FindWinningMove(Board board, Stone stone)
         {
             for (int row = 0; row < Board.Size; row++)
             {
@@ -50,7 +52,7 @@ namespace CaroGame.BLL.Game
 
                     if (isWinning)
                     {
-                        return (row, col);
+                        return new Move(row, col, stone);
                     }
                 }
             }
@@ -58,7 +60,7 @@ namespace CaroGame.BLL.Game
             return null;
         }
 
-        private (int Row, int Col) FindBestScoredCell(Board board, Stone botStone, Stone playerStone)
+        private Move FindBestScoredMove(Board board, Stone botStone, Stone playerStone)
         {
             int bestScore = -1;
             int bestRow = 0;
@@ -84,7 +86,7 @@ namespace CaroGame.BLL.Game
                 }
             }
 
-            return (bestRow, bestCol);
+            return new Move(bestRow, bestCol, botStone);
         }
 
         // Chấm điểm 1 ô trống nếu đặt quân stone vào đó, cộng dồn cả 4 hướng
@@ -92,18 +94,20 @@ namespace CaroGame.BLL.Game
         {
             int total = 0;
 
-            foreach (var direction in GameRules.Directions)
+            for (int i = 0; i < GameRules.DirectionRows.Length; i++)
             {
-                int forward = GameRules.CountSameStones(board, row, col, direction.Row, direction.Col, stone);
-                int backward = GameRules.CountSameStones(board, row, col, -direction.Row, -direction.Col, stone);
+                int dRow = GameRules.DirectionRows[i];
+                int dCol = GameRules.DirectionCols[i];
+                int forward = GameRules.CountSameStones(board, row, col, dRow, dCol, stone);
+                int backward = GameRules.CountSameStones(board, row, col, -dRow, -dCol, stone);
 
                 // Đầu hàng còn trống thì hàng còn phát triển được
                 int openEnds = 0;
-                if (IsEmptyCell(board, row + direction.Row * (forward + 1), col + direction.Col * (forward + 1)))
+                if (IsEmptyCell(board, row + dRow * (forward + 1), col + dCol * (forward + 1)))
                 {
                     openEnds++;
                 }
-                if (IsEmptyCell(board, row - direction.Row * (backward + 1), col - direction.Col * (backward + 1)))
+                if (IsEmptyCell(board, row - dRow * (backward + 1), col - dCol * (backward + 1)))
                 {
                     openEnds++;
                 }

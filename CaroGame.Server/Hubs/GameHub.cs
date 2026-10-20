@@ -97,9 +97,9 @@ namespace CaroGame.Server.Hubs
             return await gameManager.JoinQueueAsync(Context.ConnectionId);
         }
 
-        public void LeaveQueue()
+        public async Task LeaveQueue()
         {
-            gameManager.LeaveQueue(Context.ConnectionId);
+            await gameManager.LeaveQueueAsync(Context.ConnectionId);
         }
 
         public async Task VoteRule(bool agree)

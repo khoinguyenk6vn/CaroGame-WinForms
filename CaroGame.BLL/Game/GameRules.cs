@@ -8,14 +8,10 @@ namespace CaroGame.BLL.Game
         public const int WinLength = 5;
 
         // 4 hướng cần kiểm tra: ngang, dọc, chéo xuống phải, chéo xuống trái.
+        // Hướng thứ i: mỗi bước đi DirectionRows[i] hàng và DirectionCols[i] cột.
         // Mỗi hướng chỉ cần 1 chiều, chiều ngược lại được đếm bằng cách đổi dấu.
-        public static readonly (int Row, int Col)[] Directions =
-        {
-            (0, 1),
-            (1, 0),
-            (1, 1),
-            (1, -1)
-        };
+        public static readonly int[] DirectionRows = { 0, 1, 1, 1 };
+        public static readonly int[] DirectionCols = { 1, 0, 1, -1 };
 
         public static Stone Opponent(Stone stone)
         {
@@ -36,9 +32,9 @@ namespace CaroGame.BLL.Game
                 return false;
             }
 
-            foreach (var direction in Directions)
+            for (int i = 0; i < DirectionRows.Length; i++)
             {
-                if (IsWinningLine(board, row, col, direction.Row, direction.Col, blockBothEndsRule))
+                if (IsWinningLine(board, row, col, DirectionRows[i], DirectionCols[i], blockBothEndsRule))
                 {
                     return true;
                 }

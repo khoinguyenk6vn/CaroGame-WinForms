@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             pictureBox1 = new PictureBox();
             lblUsername = new Label();
             lblTitle1 = new Label();
@@ -40,6 +41,8 @@
             btnLoginToSave = new Button();
             btnBack = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
+            errorProvider = new ErrorProvider(components);
+            ((System.ComponentModel.ISupportInitialize)errorProvider).BeginInit();
             SuspendLayout();
             // 
             // pictureBox1
@@ -142,6 +145,10 @@
             btnBack.Text = "Back";
             btnBack.UseVisualStyleBackColor = true;
             // 
+            // errorProvider
+            // 
+            errorProvider.ContainerControl = this;
+            // 
             // frmProfile
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -161,6 +168,7 @@
             Name = "frmProfile";
             Text = "frmProfile";
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)errorProvider).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -178,5 +186,6 @@
         private Button btnLogout;
         private Button btnLoginToSave;
         private Button btnBack;
+        private ErrorProvider errorProvider;
     }
 }

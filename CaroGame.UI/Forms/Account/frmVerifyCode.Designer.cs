@@ -28,13 +28,15 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             btnBack = new Button();
             lblMessage = new Label();
             lblResendCountdown = new Label();
             txtCode = new TextBox();
             btnConfirm = new Button();
             btnResend = new Button();
-            lblError = new Label();
+            errorProvider = new ErrorProvider(components);
+            ((System.ComponentModel.ISupportInitialize)errorProvider).BeginInit();
             SuspendLayout();
             // 
             // btnBack
@@ -90,21 +92,15 @@
             btnResend.Text = "Gửi lại mã";
             btnResend.UseVisualStyleBackColor = true;
             // 
-            // lblError
+            // errorProvider
             // 
-            lblError.AutoSize = true;
-            lblError.Location = new Point(783, 166);
-            lblError.Name = "lblError";
-            lblError.Size = new Size(98, 15);
-            lblError.TabIndex = 16;
-            lblError.Text = "Cảnh báo lỗi (ẩn)";
+            errorProvider.ContainerControl = this;
             // 
             // frmVerifyCode
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1008, 537);
-            Controls.Add(lblError);
             Controls.Add(btnResend);
             Controls.Add(btnConfirm);
             Controls.Add(txtCode);
@@ -113,6 +109,7 @@
             Controls.Add(btnBack);
             Name = "frmVerifyCode";
             Text = "frmVerifyCode";
+            ((System.ComponentModel.ISupportInitialize)errorProvider).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -125,6 +122,6 @@
         private TextBox txtCode;
         private Button btnConfirm;
         private Button btnResend;
-        private Label lblError;
+        private ErrorProvider errorProvider;
     }
 }

@@ -57,6 +57,8 @@
             pnlPlayer2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)picPlayer2Avatar).BeginInit();
             pnlChatBox.SuspendLayout();
+            errorProvider = new ErrorProvider(components);
+            ((System.ComponentModel.ISupportInitialize)errorProvider).BeginInit();
             SuspendLayout();
             // 
             // pnlBoard
@@ -250,6 +252,10 @@
             Player2Timer.Enabled = true;
             Player2Timer.Interval = 1000;
             // 
+            // errorProvider
+            // 
+            errorProvider.ContainerControl = this;
+            // 
             // frmGame
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -271,6 +277,7 @@
             ((System.ComponentModel.ISupportInitialize)picPlayer2Avatar).EndInit();
             pnlChatBox.ResumeLayout(false);
             pnlChatBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)errorProvider).EndInit();
             ResumeLayout(false);
         }
 
@@ -298,5 +305,6 @@
         private Label lblConnectionStatus;
         private Button btnSendChat;
         private TextBox txtChatInput;
+        private ErrorProvider errorProvider;
     }
 }

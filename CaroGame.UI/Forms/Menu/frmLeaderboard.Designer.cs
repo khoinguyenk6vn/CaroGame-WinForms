@@ -28,9 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             dgvLeaderboard = new DataGridView();
             btnBack = new Button();
             ((System.ComponentModel.ISupportInitialize)dgvLeaderboard).BeginInit();
+            errorProvider = new ErrorProvider(components);
+            ((System.ComponentModel.ISupportInitialize)errorProvider).BeginInit();
             SuspendLayout();
             // 
             // dgvLeaderboard
@@ -50,6 +53,10 @@
             btnBack.Text = "GO BACK BỜ RÔ";
             btnBack.UseVisualStyleBackColor = true;
             // 
+            // errorProvider
+            // 
+            errorProvider.ContainerControl = this;
+            // 
             // frmLeaderboard
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -60,6 +67,7 @@
             Name = "frmLeaderboard";
             Text = "frmLeaderboard";
             ((System.ComponentModel.ISupportInitialize)dgvLeaderboard).EndInit();
+            ((System.ComponentModel.ISupportInitialize)errorProvider).EndInit();
             ResumeLayout(false);
         }
 
@@ -67,5 +75,6 @@
 
         private DataGridView dgvLeaderboard;
         private Button btnBack;
+        private ErrorProvider errorProvider;
     }
 }

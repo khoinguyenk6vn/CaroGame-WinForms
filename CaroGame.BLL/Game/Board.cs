@@ -10,11 +10,28 @@ namespace CaroGame.BLL.Game
         private readonly Stone[,] cells = new Stone[Size, Size];
         private readonly List<Move> moves = new List<Move>();
 
-        public int MoveCount => moves.Count;
+        public int MoveCount
+        {
+            get { return moves.Count; }
+        }
 
-        public bool IsFull => moves.Count == Size * Size;
+        public bool IsFull
+        {
+            get { return moves.Count == Size * Size; }
+        }
 
-        public Move? LastMove => moves.Count > 0 ? moves[moves.Count - 1] : null;
+        // Nước đi cuối cùng, null nếu bàn cờ còn trống
+        public Move? LastMove
+        {
+            get
+            {
+                if (moves.Count == 0)
+                {
+                    return null;
+                }
+                return moves[moves.Count - 1];
+            }
+        }
 
         public Stone GetStone(int row, int col)
         {

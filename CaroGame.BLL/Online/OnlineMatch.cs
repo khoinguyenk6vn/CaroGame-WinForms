@@ -81,19 +81,23 @@ namespace CaroGame.BLL.Online
                     return;
                 }
 
-                GetPlayer(userId).AgreesBlockRule = agree;
+                OnlinePlayer player = GetPlayer(userId);
+                player.HasVotedRule = true;
+                player.AgreesBlockRule = agree;
 
-                if (PlayerX.AgreesBlockRule != null && PlayerO.AgreesBlockRule != null)
+                // Cả 2 đã trả lời thì bắt đầu luôn, không cần chờ hết 15 giây
+                if (PlayerX.HasVotedRule && PlayerO.HasVotedRule)
                 {
                     StartGame();
                 }
             }
         }
 
-        // Chỉ khi cả 2 đồng ý mới áp dụng luật chặn 2 đầu. Không trả lời tính là không đồng ý.
+        // Chỉ khi cả 2 đồng ý mới áp dụng luật chặn 2 đầu.
+        // Không trả lời tính là không đồng ý (AgreesBlockRule mặc định là false).
         private void StartGame()
         {
-            BlockBothEndsRule = PlayerX.AgreesBlockRule == true && PlayerO.AgreesBlockRule == true;
+            BlockBothEndsRule = PlayerX.AgreesBlockRule && PlayerO.AgreesBlockRule;
             Phase = MatchPhase.Playing;
             Clock.StartFor(Stone.X);
             AddMessageToBoth("GameStarted", new GameStartedDto { BlockBothEndsRule = BlockBothEndsRule });

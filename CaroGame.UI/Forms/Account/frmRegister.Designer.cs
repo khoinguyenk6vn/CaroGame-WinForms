@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             label1 = new Label();
             txtUsername = new TextBox();
             txtEmail = new TextBox();
@@ -36,7 +37,8 @@
             btnContinue = new Button();
             lnkLogin = new LinkLabel();
             btnBack = new Button();
-            lblError = new Label();
+            errorProvider = new ErrorProvider(components);
+            ((System.ComponentModel.ISupportInitialize)errorProvider).BeginInit();
             SuspendLayout();
             // 
             // label1
@@ -112,21 +114,15 @@
             btnBack.Text = "Back";
             btnBack.UseVisualStyleBackColor = true;
             // 
-            // lblError
+            // errorProvider
             // 
-            lblError.AutoSize = true;
-            lblError.Location = new Point(794, 162);
-            lblError.Name = "lblError";
-            lblError.Size = new Size(98, 15);
-            lblError.TabIndex = 8;
-            lblError.Text = "Cảnh báo lỗi (ẩn)";
+            errorProvider.ContainerControl = this;
             // 
             // frmRegister
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1008, 537);
-            Controls.Add(lblError);
             Controls.Add(btnBack);
             Controls.Add(lnkLogin);
             Controls.Add(btnContinue);
@@ -137,6 +133,7 @@
             Controls.Add(label1);
             Name = "frmRegister";
             Text = "frmRegister";
+            ((System.ComponentModel.ISupportInitialize)errorProvider).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -151,6 +148,6 @@
         private Button btnContinue;
         private LinkLabel lnkLogin;
         private Button btnBack;
-        private Label lblError;
+        private ErrorProvider errorProvider;
     }
 }

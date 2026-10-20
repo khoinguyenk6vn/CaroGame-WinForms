@@ -5,7 +5,8 @@ using Microsoft.AspNetCore.SignalR.Client;
 
 namespace CaroGame.UI.Forms.Account
 {
-    // Đăng ký tài khoản, sau đó bắt nhập mã xác minh gửi qua email
+    // Đăng ký tài khoản, sau đó bắt nhập mã xác minh gửi qua email.
+    // Lỗi hiện bằng ErrorProvider: biểu tượng đỏ cạnh ô/nút bị lỗi, rê chuột vào biểu tượng để xem lý do.
     public partial class frmRegister : Form
     {
         public frmRegister()
@@ -16,7 +17,6 @@ namespace CaroGame.UI.Forms.Account
             // Phím tắt: Enter = btnContinue, Esc = btnBack
             AcceptButton = btnContinue;
             CancelButton = btnBack;
-            lblError.Text = "";
 
             // Gắn các sự kiện chưa được gắn trong Designer
             btnContinue.Click += btnContinue_Click;
@@ -26,9 +26,37 @@ namespace CaroGame.UI.Forms.Account
 
         private async void btnContinue_Click(object? sender, EventArgs e)
         {
-            lblError.Text = "";
+            // Xóa các lỗi của lần bấm trước
+            errorProvider.Clear();
 
-            // Mọi điều kiện (độ dài username, mật khẩu, nhập lại khớp, email hợp lệ, trùng tên) do tầng BLL ở server kiểm tra
+            // Ô nào để trống thì báo lỗi cạnh ô đó, chưa gửi lên server
+            bool hasEmpty = false;
+            if (txtUsername.Text.Trim() == "")
+            {
+                errorProvider.SetError(txtUsername, "Chưa nhập username.");
+                hasEmpty = true;
+            }
+            if (txtEmail.Text.Trim() == "")
+            {
+                errorProvider.SetError(txtEmail, "Chưa nhập email.");
+                hasEmpty = true;
+            }
+            if (txtPassword.Text == "")
+            {
+                errorProvider.SetError(txtPassword, "Chưa nhập mật khẩu.");
+                hasEmpty = true;
+            }
+            if (txtConfirmPassword.Text == "")
+            {
+                errorProvider.SetError(txtConfirmPassword, "Chưa nhập lại mật khẩu.");
+                hasEmpty = true;
+            }
+            if (hasEmpty)
+            {
+                return;
+            }
+
+            // Các điều kiện còn lại (độ dài username, mật khẩu, nhập lại khớp, email hợp lệ, trùng tên) do tầng BLL ở server kiểm tra
             string email = txtEmail.Text.Trim();
             AccountResult result;
             try
@@ -38,13 +66,13 @@ namespace CaroGame.UI.Forms.Account
             }
             catch (Exception)
             {
-                lblError.Text = "Không kết nối được server.";
+                errorProvider.SetError(btnContinue, "Không kết nối được server.");
                 return;
             }
 
             if (!result.Success)
             {
-                lblError.Text = result.Message;
+                errorProvider.SetError(btnContinue, result.Message);
                 return;
             }
 

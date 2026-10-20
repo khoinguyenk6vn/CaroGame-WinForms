@@ -5,7 +5,8 @@ using Microsoft.AspNetCore.SignalR.Client;
 
 namespace CaroGame.UI.Forms.Account
 {
-    // Quên mật khẩu: nhập email -> nhập mã -> đặt mật khẩu mới
+    // Quên mật khẩu: nhập email -> nhập mã -> đặt mật khẩu mới.
+    // Lỗi hiện bằng ErrorProvider: biểu tượng đỏ cạnh ô bị lỗi, rê chuột vào biểu tượng để xem lý do.
     public partial class frmForgotPassword : Form
     {
         public frmForgotPassword()
@@ -16,7 +17,6 @@ namespace CaroGame.UI.Forms.Account
             // Phím tắt: Enter = btnSendCode, Esc = btnBack
             AcceptButton = btnSendCode;
             CancelButton = btnBack;
-            lblError.Text = "";
 
             // Gắn các sự kiện chưa được gắn trong Designer
             btnSendCode.Click += btnSendCode_Click;
@@ -25,8 +25,15 @@ namespace CaroGame.UI.Forms.Account
 
         private async void btnSendCode_Click(object? sender, EventArgs e)
         {
-            lblError.Text = "";
+            // Xóa các lỗi của lần bấm trước
+            errorProvider.Clear();
+
             string email = txtEmail.Text.Trim();
+            if (email == "")
+            {
+                errorProvider.SetError(txtEmail, "Chưa nhập email.");
+                return;
+            }
 
             AccountResult result;
             try
@@ -36,13 +43,14 @@ namespace CaroGame.UI.Forms.Account
             }
             catch (Exception)
             {
-                lblError.Text = "Không kết nối được server.";
+                errorProvider.SetError(btnSendCode, "Không kết nối được server.");
                 return;
             }
 
+            // Email không tồn tại, chưa đủ 60 giây, gửi mail lỗi... đều báo cạnh ô email
             if (!result.Success)
             {
-                lblError.Text = result.Message;
+                errorProvider.SetError(txtEmail, result.Message);
                 return;
             }
 
