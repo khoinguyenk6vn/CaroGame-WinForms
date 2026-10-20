@@ -29,7 +29,7 @@ Game có 3 chế độ:
 
 Ngoài ra có tài khoản (đăng ký, xác minh email, quên mật khẩu), hệ thống điểm và bậc rank, bảng xếp hạng chung, lịch sử đấu, avatar, và chat trong trận.
 
-**Trạng thái hiện tại:** đã xong phần code của toàn bộ roadmap; server thật chạy qua `https://caro.vernfy.com` và đã chơi Online được. Còn lại: thêm file âm thanh, sửa lỗi vặt. Hướng dẫn chạy server xem [Triển khai lên máy host](#triển-khai-lên-máy-host).
+**Trạng thái hiện tại:** đã xong phần code của toàn bộ roadmap; server thật chạy qua `https://caro.vernfy.com`, đã chơi Online và chat giữa 2 máy khác mạng (18/10/2026). Cả nhóm đã bấm thử toàn bộ giao diện. Còn lại: thêm file âm thanh, tập phương án localhost. Hướng dẫn chạy server xem [Triển khai lên máy host](#triển-khai-lên-máy-host).
 
 ## Kiến trúc
 
@@ -58,6 +58,7 @@ Các gói NuGet (EF Core, BCrypt, SignalR Client) chỉ cài ở DAL. BLL, GUI v
 - Entity classes và Migrations nối với SQL Server thật.
 - Truy vấn bằng LINQ to Entities, chỉ viết trong các class DAL.
 - Mọi thao tác CSDL dùng async/await.
+- **Validate trước khi ghi:** entity khai báo quy tắc bằng `[Required]`, `[MaxLength]`, `[Range]`, `[RegularExpression]`, `[EmailAddress]` (kèm câu báo lỗi tiếng Việt). Mỗi hàm thêm/sửa trong DAL gọi `EntityValidator.Validate(entity)` trước `SaveChangesAsync`; dữ liệu sai thì ném `ValidationException`, không ghi gì xuống CSDL. Các thuộc tính này không làm đổi cấu trúc bảng nên không cần Migration mới.
 - **Không dùng ADO.NET** (`SqlConnection`, `SqlCommand`, `DataTable`, `FromSqlRaw`...) ở bất kỳ đâu trong repo.
 
 ### Giao tiếp Client và Server
@@ -472,7 +473,7 @@ Nguyên tắc sắp xếp: có thứ chơi được sớm nhất, và thử đư
 - [x] Đăng ký, gửi mã email, xác minh.
 - [x] Đăng nhập, session token, chặn đăng nhập 2 máy.
 - [x] Quên mật khẩu.
-- [ ] Thử Cloudflare tunnel với server thật.
+- [x] Thử Cloudflare tunnel với server thật.
 
 **Form cần có trước:** `frmRegister`, `frmLogin`, `frmVerifyCode`, `frmForgotPassword`, `frmResetPassword` (TV2).
 **Việc hạ tầng:** LocalDB, Gmail App Password, Cloudflare tunnel.
@@ -489,7 +490,7 @@ Nguyên tắc sắp xếp: có thứ chơi được sớm nhất, và thử đư
 **Việc hạ tầng:** bộ ảnh DiceBear.
 **Kết quả:** xong toàn bộ phần tài khoản.
 
-### Bước 6: PvP Online (đã xong, trừ giao diện bỏ phiếu luật)
+### Bước 6: PvP Online (đã xong)
 
 - [x] Ghép trận tự động theo điểm, hủy tìm trận.
 - [x] Hỏi luật chặn 2 đầu trước trận: hỏi bằng MessageBox Có/Không khi vào trận, cần cả 2 người đồng ý mới bật luật; không trả lời trong 15 giây thì chơi luật thường (nhóm chốt bỏ `frmRuleVote`).
@@ -502,11 +503,11 @@ Nguyên tắc sắp xếp: có thứ chơi được sớm nhất, và thử đư
 **Form cần có trước:** `frmMatchmaking`, `frmRuleVote`, `frmUndoRequest` (TV1).
 **Kết quả:** chơi được trận xếp hạng giữa 2 máy.
 
-### Bước 7: Triển khai
+### Bước 7: Triển khai (đã xong, trừ tập phương án dự phòng)
 
-- [ ] Cài SQL Server Express và chạy Migration trên máy host.
-- [ ] Chạy server sau Cloudflare tunnel ở subdomain cố định.
-- [ ] Thử 2 máy ở 2 mạng khác nhau.
+- [x] Cài SQL Server Express và chạy Migration trên máy host.
+- [x] Chạy server sau Cloudflare tunnel ở subdomain cố định (`caro.vernfy.com`).
+- [x] Thử 2 máy ở 2 mạng khác nhau: đã chơi Online và chat được (18/10/2026).
 - [ ] Tập phương án dự phòng: server và DB chạy trên laptop demo, client trỏ localhost.
 
 **Kết quả:** sẵn sàng demo.
@@ -518,8 +519,11 @@ Hướng dẫn chi tiết ở mục [Triển khai lên máy host](#triển-khai-
 - [x] Âm thanh và nhạc nền: code đã xong. **Còn chờ file**: đặt `move.mp3` (tiếng đánh quân) và `music.mp3` (nhạc nền) vào thư mục `CaroGame.UI/Sounds/`. Thiếu file thì game vẫn chạy, chỉ không có tiếng.
 - [x] Nội dung form hướng dẫn (Information).
 - [x] Rà lại toàn bộ luồng: đã kiểm thử tự động luật chơi, bot, tài khoản và 2 người chơi Online qua server thật.
-- [ ] Bấm thử toàn bộ giao diện trên máy thật (cả nhóm).
+- [x] Bấm thử toàn bộ giao diện trên máy thật (cả nhóm, 18/10/2026).
 - [x] Câu hỏi thầy có thể hỏi: xem mục [Câu hỏi bảo vệ](#câu-hỏi-bảo-vệ).
+- [x] BindingSource: ô chat (`BindingList` + `BindingSource`, thêm tin là ListBox tự cập nhật), Lịch sử và BXH (DataGridView lấy dữ liệu qua BindingSource), Profile (`lblScore`, `lblRank` gắn `DataBindings`, đổi avatar xong tự cập nhật).
+- [x] Validate với EF Core trước `SaveChangesAsync` (`EntityValidator` trong DAL).
+- [ ] ErrorProvider thay MessageBox/`lblError`: **chờ nhóm kéo** component `ErrorProvider` (đặt tên `errorProvider`) vào `frmLogin`, `frmRegister`, `frmVerifyCode`, `frmForgotPassword`, `frmResetPassword`, `frmProfile`, `frmHistory`, `frmLeaderboard`, `frmGame`. Giữ MessageBox cho thông báo thành công, hỏi luật Yes/No, trận bị hủy.
 
 ## Triển khai lên máy host
 
@@ -641,6 +645,10 @@ Chạy server và SQL Server ngay trên laptop demo, để `"ServerUrl": "http:/
 | Mất kết nối giữa trận thì sao? | Server giữ phiên 30 giây và tạm dừng trận. SignalR tự kết nối lại, client gửi token để server gắn lại. Quá 30 giây thì xử thua như đầu hàng (−100) và giải phóng phiên. |
 | Tính điểm rank thế nào? | n là số quân trên bàn. Thắng: n ≤ 25 được 50, sau đó giảm dần, thấp nhất 35. Thua: tương tự, trừ ít nhất 25. Đầu hàng hoặc mất kết nối bị trừ 100. Điểm không xuống dưới 1000. |
 | Sao `await Task.Delay(1000)` mà không dùng `Thread.Sleep`? | `Thread.Sleep` làm đứng luồng giao diện, cửa sổ bị treo. `await Task.Delay` chờ mà giao diện vẫn chạy. |
+| BindingSource dùng để làm gì? | Là lớp trung gian giữa dữ liệu và control. Control (ListBox, DataGridView, Label) gắn với BindingSource, BindingSource gắn với dữ liệu. Ô chat dùng `BindingList`: `Add` 1 tin là ListBox tự hiện, không phải sửa `Items` bằng tay. Profile gán `ProfileDto` mới vào `DataSource` là 2 label tự đổi. |
+| Sao chat dùng `BindingList` mà không dùng `List`? | `List` không báo khi có phần tử mới nên ListBox không biết để vẽ lại. `BindingList` phát sự kiện `ListChanged` mỗi lần thêm/xóa, BindingSource nghe sự kiện đó và cập nhật ListBox. |
+| Validate dữ liệu trước khi lưu thế nào? | Entity khai báo quy tắc bằng attribute (`[MaxLength(100)]`, `[Range(1000, ...)]`...). Trước `SaveChangesAsync`, DAL gọi `Validator.TryValidateObject`; sai thì ném `ValidationException` với câu báo lỗi, BLL bắt lại và trả lỗi cho người chơi. Ví dụ email dài hơn 100 ký tự bị chặn trước khi tới SQL Server. |
+| BLL đã kiểm tra rồi, sao DAL còn kiểm tra? | BLL kiểm tra theo nghiệp vụ (trùng tên, nhập lại mật khẩu). DAL kiểm tra lần cuối theo đúng giới hạn của bảng, để dữ liệu sai không bao giờ vào CSDL dù gọi từ chỗ nào. |
 
 ## Quy ước làm việc
 

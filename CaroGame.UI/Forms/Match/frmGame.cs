@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using CaroGame.BLL.Dtos;
 using CaroGame.BLL.Game;
 using CaroGame.BLL.Services;
@@ -28,6 +29,12 @@ namespace CaroGame.UI.Forms.Match
 
         private readonly BotChatService? botChat;
         private string lastShownChatError = "";
+
+        // Danh sách tin nhắn chat. listBoxChat được gắn với danh sách này qua BindingSource:
+        // chỉ cần Add vào chatMessages là ListBox tự hiện tin mới, không phải sửa ListBox bằng tay.
+        // Dùng BindingList (không dùng List) vì BindingList báo cho BindingSource mỗi khi thêm/xóa phần tử.
+        private readonly BindingList<string> chatMessages = new BindingList<string>();
+        private readonly BindingSource chatSource = new BindingSource();
         private HubConnection? hub;
         private frmUndoRequest? undoRequestForm;
         private bool surrenderedByMe;
@@ -64,6 +71,10 @@ namespace CaroGame.UI.Forms.Match
         {
             // Phóng to cửa sổ thì toàn bộ giao diện giãn theo
             new FormScaler(this);
+
+            // Gắn ô chat với danh sách tin nhắn
+            chatSource.DataSource = chatMessages;
+            listBoxChat.DataSource = chatSource;
 
             pnlBoard.MouseClick += pnlBoard_MouseClick;
             pnlBoard.Resize += pnlBoard_Resize;
@@ -483,13 +494,13 @@ namespace CaroGame.UI.Forms.Match
             // PvP Offline: tin nhắn chỉ hiển thị, không có phản hồi
             if (localMatch!.Mode == GameMode.PvPOffline)
             {
-                listBoxChat.Items.Add(message);
+                AddChatMessage(message);
                 return;
             }
 
-            listBoxChat.Items.Add(localMatch.Player1Name + ": " + message);
+            AddChatMessage(localMatch.Player1Name + ": " + message);
 
-            // await chạy tiếp trên luồng giao diện nên cập nhật listBoxChat trực tiếp được
+            // await chạy tiếp trên luồng giao diện nên cập nhật ô chat trực tiếp được
             string reply = await botChat!.GetReplyAsync(message, localMatch);
 
             // Trong lúc chờ bot trả lời, người chơi có thể đã đóng màn trận
@@ -498,14 +509,23 @@ namespace CaroGame.UI.Forms.Match
                 return;
             }
 
-            listBoxChat.Items.Add("Bot: " + reply);
+            AddChatMessage("Bot: " + reply);
 
             // Không gọi được AI thì báo lý do (mỗi lý do 1 lần) để người chơi biết bot đang dùng câu soạn sẵn
             if (botChat.LastError != "" && botChat.LastError != lastShownChatError)
             {
-                listBoxChat.Items.Add("(Bot đang dùng câu soạn sẵn vì " + botChat.LastError + ")");
+                AddChatMessage("(Bot đang dùng câu soạn sẵn vì " + botChat.LastError + ")");
             }
             lastShownChatError = botChat.LastError;
+        }
+
+        // Thêm 1 tin vào danh sách: ListBox tự cập nhật nhờ BindingSource.
+        // MoveLast chuyển dòng đang chọn tới tin mới nhất (ListBox gắn BindingSource luôn tô dòng đang chọn),
+        // nếu không thì tin đầu tiên sẽ bị tô mãi.
+        private void AddChatMessage(string text)
+        {
+            chatMessages.Add(text);
+            chatSource.MoveLast();
         }
 
         // ===================== Tin từ server (Online) =====================
@@ -643,7 +663,7 @@ namespace CaroGame.UI.Forms.Match
 
         private void OnChatMessage(ChatDto chat)
         {
-            listBoxChat.Items.Add(chat.Sender + ": " + chat.Text);
+            AddChatMessage(chat.Sender + ": " + chat.Text);
         }
 
         private void OnGameOver(GameOverDto result)

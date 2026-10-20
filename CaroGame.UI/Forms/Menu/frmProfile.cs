@@ -13,10 +13,20 @@ namespace CaroGame.UI.Forms.Menu
         // true nếu người chơi bấm Đăng xuất
         public bool LoggedOut { get; private set; }
 
+        // Thông tin Profile lấy từ server. lblScore, lblRank gắn với BindingSource này (DataBindings),
+        // nên mỗi lần gán ProfileDto mới vào DataSource thì 2 label tự hiện điểm và bậc rank mới.
+        private readonly BindingSource profileSource = new BindingSource();
+
         public frmProfile()
         {
             InitializeComponent();
             new FormScaler(this);
+
+            // Chưa có dữ liệu thì cho BindingSource biết kiểu dữ liệu (ProfileDto) để gắn được tên thuộc tính.
+            // "Text" là thuộc tính của Label, "Score"/"RankName" là thuộc tính của ProfileDto.
+            profileSource.DataSource = typeof(ProfileDto);
+            lblScore.DataBindings.Add("Text", profileSource, "Score");
+            lblRank.DataBindings.Add("Text", profileSource, "RankName");
 
             // Phím tắt: Esc = btnBack
             CancelButton = btnBack;
@@ -59,8 +69,7 @@ namespace CaroGame.UI.Forms.Menu
                     if (profile != null)
                     {
                         Session.UpdateProfile(profile);
-                        lblScore.Text = profile.Score.ToString();
-                        lblRank.Text = profile.RankName;
+                        profileSource.DataSource = profile;
                     }
                 }
                 catch (Exception)

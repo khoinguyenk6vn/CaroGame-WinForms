@@ -16,19 +16,24 @@ namespace CaroGame.DAL.Entities
         public User? Opponent { get; set; }
 
         // "PvE", "PvPOffline", "PvPOnline"
+        [Required(ErrorMessage = "Thiếu chế độ chơi.")]
         [MaxLength(20)]
         public string Mode { get; set; } = "";
 
         // "Win", "Lose", "Draw"
+        [Required(ErrorMessage = "Thiếu kết quả trận.")]
         [MaxLength(10)]
         public string Result { get; set; } = "";
 
         // "FiveInRow", "Timeout", "Forfeit", "Disconnect", "Draw"
+        [Required(ErrorMessage = "Thiếu lý do kết thúc.")]
         [MaxLength(20)]
         public string EndReason { get; set; } = "";
 
         public bool BlockBothEndsRule { get; set; }
 
+        // Bàn 20x20 nên có tối đa 400 nước
+        [Range(0, 400, ErrorMessage = "Số nước phải từ 0 đến 400.")]
         public int MoveCount { get; set; }
 
         // Điểm thay đổi, chỉ có ở trận Online

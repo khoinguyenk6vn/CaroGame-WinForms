@@ -43,9 +43,15 @@ namespace CaroGame.BLL.Settings
         // Để trống thì không gửi (dùng khi đổi sang nhà cung cấp không hỗ trợ, ví dụ Groq).
         public string ReasoningEffort { get; set; } = "";
 
-        public bool IsConfigured =>
-            !string.IsNullOrWhiteSpace(BaseUrl)
-            && !string.IsNullOrWhiteSpace(Model)
-            && !string.IsNullOrWhiteSpace(ApiKey);
+        // Đủ địa chỉ, tên model và API key thì mới gọi LLM được
+        public bool IsConfigured
+        {
+            get
+            {
+                return !string.IsNullOrWhiteSpace(BaseUrl)
+                    && !string.IsNullOrWhiteSpace(Model)
+                    && !string.IsNullOrWhiteSpace(ApiKey);
+            }
+        }
     }
 }

@@ -56,7 +56,10 @@ namespace CaroGame.BLL.Game
         }
 
         // PvE: đang tới lượt bot
-        public bool IsBotTurn => Mode == GameMode.PvE && !IsOver && CurrentTurn == BotStone;
+        public bool IsBotTurn
+        {
+            get { return Mode == GameMode.PvE && !IsOver && CurrentTurn == BotStone; }
+        }
 
         // Người chơi đánh vào ô (row, col). Trả về false nếu nước đi không hợp lệ
         // (ô ngoài bàn, ô đã có quân, trận đã kết thúc, hoặc đang tới lượt bot).
@@ -80,7 +83,7 @@ namespace CaroGame.BLL.Game
                 return false;
             }
 
-            var botMove = bot.ChooseMove(Board, BotStone);
+            Move botMove = bot.ChooseMove(Board, BotStone);
             PlaceStone(botMove.Row, botMove.Col);
             return true;
         }

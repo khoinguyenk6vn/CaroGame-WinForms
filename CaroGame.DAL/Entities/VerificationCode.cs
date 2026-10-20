@@ -11,10 +11,13 @@ namespace CaroGame.DAL.Entities
         public int UserId { get; set; }
         public User? User { get; set; }
 
+        [Required(ErrorMessage = "Thiếu mã xác minh.")]
         [MaxLength(6)]
+        [RegularExpression("^[0-9]{6}$", ErrorMessage = "Mã xác minh phải gồm đúng 6 chữ số.")]
         public string Code { get; set; } = "";
 
         // Mục đích của mã: "Register" (đăng ký) hoặc "ResetPassword" (quên mật khẩu)
+        [Required(ErrorMessage = "Thiếu mục đích của mã.")]
         [MaxLength(20)]
         public string Purpose { get; set; } = "";
 

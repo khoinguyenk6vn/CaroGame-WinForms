@@ -48,8 +48,11 @@ namespace CaroGame.DAL.DataAccess
             return await db.Users.AnyAsync(u => u.Email == email);
         }
 
+        // Dữ liệu sai (ví dụ email dài quá 100 ký tự) thì ném ValidationException, không ghi gì
         public async Task AddAsync(User user)
         {
+            EntityValidator.Validate(user);
+
             using AppDbContext db = dbFactory.CreateDbContext();
             db.Users.Add(user);
             await db.SaveChangesAsync();
@@ -58,6 +61,8 @@ namespace CaroGame.DAL.DataAccess
         // Lưu các thay đổi trên một user (đổi mật khẩu, xác minh email, đổi điểm, đổi avatar...)
         public async Task UpdateAsync(User user)
         {
+            EntityValidator.Validate(user);
+
             using AppDbContext db = dbFactory.CreateDbContext();
             db.Users.Update(user);
             await db.SaveChangesAsync();

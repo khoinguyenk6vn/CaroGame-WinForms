@@ -23,6 +23,8 @@ namespace CaroGame.DAL.DataAccess
 
         public async Task AddAsync(VerificationCode code)
         {
+            EntityValidator.Validate(code);
+
             using AppDbContext db = dbFactory.CreateDbContext();
             db.VerificationCodes.Add(code);
             await db.SaveChangesAsync();
@@ -30,6 +32,8 @@ namespace CaroGame.DAL.DataAccess
 
         public async Task UpdateAsync(VerificationCode code)
         {
+            EntityValidator.Validate(code);
+
             using AppDbContext db = dbFactory.CreateDbContext();
             db.VerificationCodes.Update(code);
             await db.SaveChangesAsync();

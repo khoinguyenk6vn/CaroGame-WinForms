@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
@@ -73,7 +74,17 @@ namespace CaroGame.BLL.Services
                 DefaultAvatarIndex = Random.Shared.Next(DefaultAvatarCount),
                 CreatedAt = DateTime.Now
             };
-            await userDal.AddAsync(user);
+
+            // DAL kiểm tra lại dữ liệu theo các thuộc tính trên entity User trước khi ghi xuống CSDL
+            // (ví dụ email dài quá 100 ký tự); sai thì báo lỗi cho người chơi, không lưu
+            try
+            {
+                await userDal.AddAsync(user);
+            }
+            catch (ValidationException ex)
+            {
+                return Fail(ex.Message);
+            }
 
             // Không gửi được mã xác minh thì xóa tài khoản vừa tạo,
             // để người chơi đăng ký lại được với cùng username và email
