@@ -27,6 +27,9 @@ namespace CaroGame.UI.Forms.Match
         // Trận Online (null nếu đang chơi PvE/Offline)
         private readonly OnlineMatchState? onlineMatch;
 
+        // Thông tin server gửi lúc ghép trận Online (tên, điểm, avatar của 2 người). null nếu PvE/Offline.
+        private readonly MatchFoundDto? matchInfo;
+
         private readonly BotChatService? botChat;
         private string lastShownChatError = "";
 
@@ -60,6 +63,7 @@ namespace CaroGame.UI.Forms.Match
             InitializeComponent();
 
             onlineMatch = new OnlineMatchState(matchInfo);
+            this.matchInfo = matchInfo;
 
             // Đồng hồ Online do server chạy và gửi về mỗi giây, client không tự đếm
             Player1Timer.Enabled = false;
@@ -158,6 +162,8 @@ namespace CaroGame.UI.Forms.Match
                 lblPlayer2Name.Text = localMatch.Player2Name + " (O)";
                 lblRule.Text = "Chặn 2 đầu: Bật";
                 lblConnectionStatus.Text = "Offline";
+                UpdateView();
+                await ShowLocalPlayersAsync();
             }
             else
             {
@@ -167,9 +173,42 @@ namespace CaroGame.UI.Forms.Match
                 lblConnectionStatus.Text = "Online";
                 txtChatInput.MaxLength = 200;
                 await ListenOnlineEventsAsync();
+                UpdateView();
+                await ShowOnlinePlayersAsync();
             }
+        }
 
-            UpdateView();
+        // ===================== Avatar, logo rank =====================
+
+        // PvE/Offline: thẻ 1 là người đang dùng máy (avatar theo Profile, Guest thì ảnh mặc định ngẫu nhiên lúc mở app),
+        // thẻ 2 là Bot / Người chơi 2: 1 ảnh mặc định ngẫu nhiên. Không có logo rank (rank chỉ có ở Online).
+        private async Task ShowLocalPlayersAsync()
+        {
+            picPlayer1Rank.Visible = false;
+            picPlayer2Rank.Visible = false;
+
+            ShowImage(picPlayer2Avatar, AvatarLoader.LoadRandomDefault());
+            ShowImage(picPlayer1Avatar, await AvatarLoader.LoadForCurrentPlayerAsync());
+        }
+
+        // Online: thẻ 1 là người cầm X, thẻ 2 là người cầm O. Điểm và avatar của 2 người do server gửi trong MatchFound.
+        private async Task ShowOnlinePlayersAsync()
+        {
+            ShowImage(picPlayer1Rank, RankIconLoader.Load(matchInfo!.XScore));
+            ShowImage(picPlayer2Rank, RankIconLoader.Load(matchInfo.OScore));
+
+            ShowImage(picPlayer1Avatar, await AvatarLoader.LoadAsync(matchInfo.XDefaultAvatarIndex, matchInfo.XAvatarPath));
+            ShowImage(picPlayer2Avatar, await AvatarLoader.LoadAsync(matchInfo.ODefaultAvatarIndex, matchInfo.OAvatarPath));
+        }
+
+        // Thiếu ảnh (null) thì giữ nguyên ảnh đang hiện.
+        // Tải ảnh từ server cần thời gian, trong lúc đó người chơi có thể đã đóng màn trận nên phải kiểm tra IsDisposed.
+        private void ShowImage(PictureBox pictureBox, Image? image)
+        {
+            if (image != null && !IsDisposed)
+            {
+                pictureBox.Image = image;
+            }
         }
 
         // ===================== Bàn cờ =====================

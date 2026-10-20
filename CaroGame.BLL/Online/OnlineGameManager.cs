@@ -66,6 +66,8 @@ namespace CaroGame.BLL.Online
                     UserId = user.Id,
                     Username = user.Username,
                     Score = user.Score,
+                    DefaultAvatarIndex = user.DefaultAvatarIndex,
+                    AvatarPath = user.AvatarPath ?? "",
                     ConnectionId = connectionId,
                     SecondsWaited = 0
                 });
@@ -184,6 +186,9 @@ namespace CaroGame.BLL.Online
             {
                 UserId = waitingPlayer.UserId,
                 Username = waitingPlayer.Username,
+                Score = waitingPlayer.Score,
+                DefaultAvatarIndex = waitingPlayer.DefaultAvatarIndex,
+                AvatarPath = waitingPlayer.AvatarPath,
                 ConnectionId = waitingPlayer.ConnectionId
             };
         }

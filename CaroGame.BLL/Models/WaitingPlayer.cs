@@ -6,6 +6,10 @@ namespace CaroGame.BLL.Models
         public int UserId { get; set; }
         public string Username { get; set; } = "";
         public int Score { get; set; }
+        public int DefaultAvatarIndex { get; set; }
+
+        // Rỗng nếu chưa upload avatar
+        public string AvatarPath { get; set; } = "";
         public string ConnectionId { get; set; } = "";
         public int SecondsWaited { get; set; }
     }

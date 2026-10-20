@@ -6,6 +6,12 @@ namespace CaroGame.BLL.Models
     {
         public int UserId { get; set; }
         public string Username { get; set; } = "";
+
+        // Điểm và avatar lúc vào trận, gửi cho 2 máy để hiện logo rank và avatar trên thẻ người chơi
+        public int Score { get; set; }
+        public int DefaultAvatarIndex { get; set; }
+        public string AvatarPath { get; set; } = "";
+
         public string ConnectionId { get; set; } = "";
         public Stone Stone { get; set; }
 

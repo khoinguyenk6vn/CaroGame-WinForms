@@ -40,7 +40,9 @@
             btnLogout = new Button();
             btnLoginToSave = new Button();
             btnBack = new Button();
+            picRank = new PictureBox();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)picRank).BeginInit();
             errorProvider = new ErrorProvider(components);
             ((System.ComponentModel.ISupportInitialize)errorProvider).BeginInit();
             SuspendLayout();
@@ -99,7 +101,16 @@
             lblRank.Size = new Size(80, 15);
             lblRank.TabIndex = 5;
             lblRank.Text = "Rank Của Bạn";
-            // 
+            //
+            // picRank
+            //
+            picRank.Location = new Point(620, 121);
+            picRank.Name = "picRank";
+            picRank.Size = new Size(123, 123);
+            picRank.SizeMode = PictureBoxSizeMode.Zoom;
+            picRank.TabIndex = 11;
+            picRank.TabStop = false;
+            //
             // btnChangeAvatar
             // 
             btnChangeAvatar.Location = new Point(160, 260);
@@ -159,6 +170,7 @@
             Controls.Add(btnLogout);
             Controls.Add(btnHistory);
             Controls.Add(btnChangeAvatar);
+            Controls.Add(picRank);
             Controls.Add(lblRank);
             Controls.Add(lblScore);
             Controls.Add(lblTitle2);
@@ -168,6 +180,7 @@
             Name = "frmProfile";
             Text = "frmProfile";
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)picRank).EndInit();
             ((System.ComponentModel.ISupportInitialize)errorProvider).EndInit();
             ResumeLayout(false);
             PerformLayout();
@@ -186,6 +199,7 @@
         private Button btnLogout;
         private Button btnLoginToSave;
         private Button btnBack;
+        private PictureBox picRank;
         private ErrorProvider errorProvider;
     }
 }
