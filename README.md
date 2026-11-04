@@ -108,6 +108,10 @@ dotnet tool install --global dotnet-ef --version 10.0.13
 dotnet ef database update --project CaroGame.DAL --startup-project CaroGame.Server
 ```
 
+Cách khác, không cần `dotnet-ef`: mở file `Database/CaroGame.sql` bằng SQL Server Management Studio, kết nối tới `(localdb)\MSSQLLocalDB` (hoặc `.\SQLEXPRESS`) rồi bấm Execute. File này tạo database `CaroGame` và đủ 3 bảng, sinh từ các Migration bằng lệnh `dotnet ef migrations script --idempotent --project CaroGame.DAL --startup-project CaroGame.Server --output Database/CaroGame.sql` (khi có Migration mới thì chạy lại lệnh này rồi thêm lại phần `CREATE DATABASE` ở đầu file).
+
+Muốn có sẵn dữ liệu để thử: chạy tiếp file `Database/CaroGame_SampleData.sql`. File tạo 4 tài khoản đã xác minh email `giangvien`, `demo_an`, `demo_binh`, `demo_chi` (mật khẩu đều là `123456`) cùng lịch sử 6 trận Online và 4 trận PvE/Offline, nên đăng nhập là xem được Profile, Lịch sử và Bảng xếp hạng. Không chạy file này trên CSDL của server thật.
+
 Khi có Migration mới (sau khi pull code), chạy lại lệnh `dotnet ef database update` ở trên để cập nhật CSDL.
 
 Migration nằm trong project `CaroGame.DAL`. `--startup-project CaroGame.Server` để lệnh đọc được connection string trong `appsettings.Local.json` của Server.
